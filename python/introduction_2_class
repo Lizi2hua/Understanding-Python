@@ -12,3 +12,5 @@ Class instances can also have methods (defined by its class) for modifying its s
                                     further after creation.
 4.namespace is a mapping from name and objects,and it currently implemented as Python dictionary.
 命名空间是名字和对象的映射，通过python的字典实现。
+5.Class objects support two kinds of operations: attribute references and instantiation
+类支持两种操作：属性引用和实例化
