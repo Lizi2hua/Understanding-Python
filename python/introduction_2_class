@@ -1,0 +1,14 @@
+https://docs.python.org/3/tutorial/classes.html
+1.class means bundling data and functionality together.
+class数据和函数的集合
+2.Each class instance can have attributes attached to it for maintaining its state.
+Class instances can also have methods (defined by its class) for modifying its state.
+每个类的实例都由属性维护整个类的实例的状态，每个实例化的类通过方法来修改它的状态
+3.Python have all the OPP features:
+                                  1:inheritance mechanism:a derived class can override any methods of its base class
+                                                          or classes.can also call the same method name of its base class
+                                                          or classes.
+                                  2.Object can contain arbitrary(任意的）amount and all kinds of data,and can be modified
+                                    further after creation.
+4.namespace is a mapping from name and objects,and it currently implemented as Python dictionary.
+命名空间是名字和对象的映射，通过python的字典实现。
