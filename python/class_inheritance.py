@@ -10,6 +10,7 @@ class Person(object):
     def talk(self,word):
         print("people is talking:",word)
 #定义一个继承Person类的子类
+#**************************************************#
 class Chinese(Person):
     #继承后重构父类的构造函数
     def __init__(self,name,age,language): #参数必须有父类的参数，否则报错（因为下行继承的父类函数必须有这些参数）
@@ -29,6 +30,7 @@ class Chinese(Person):
             print("is talking:",word,"with chinese")
         else:
             print("is talking:",word,"without chinese" )
+#**************************************************#
 class American(Person):
     pass
 #pass 是占位符，为了保存结构完整性。
@@ -65,6 +67,22 @@ class speaker():
         self.topic=topic
     def speak(self):
         print("i am %s,my topic is %s"%(self.name,self.topic))
-
-
-
+#**************************************************#
+class present1(student,speaker):
+    #继承的顺序会对程序有影响
+    def __init__(self,name,age,weight,grade,topic):
+        student.__init__(self,name,age,weight,grade)
+        speaker.__init__(self,name,topic)
+test1=present1("tim",30,40,4,'student-speaker')
+test1.speak()
+#output:my name is tim,i am 30 yrs old,and i am in 4 grade
+# **************************************************#
+class present2(speaker,student):
+    #继承的顺序会对程序有影响
+    def __init__(self,name,age,weight,grade,topic):
+        student.__init__(self,name,age,weight,grade)
+        speaker.__init__(self,name,topic)
+test2=present2("allen",29,40,3,'speaker-student')
+test2.speak()
+#output:i am allen,my topic is speaker-student
+# **************************************************#
