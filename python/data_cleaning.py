@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat May  9 17:15:30 2020
-
+from；https://www.kaggle.com/kanncaa1/data-sciencetutorial-for-beginners
 @author: Natuski_
 """
 #*******************************#
@@ -27,3 +27,14 @@ data_describe=data.describe()
 data.boxplot(column='Attack',by='Legendary')
 #分离指定的列 data[['col1','col2']]
 dat2=data[['Attack','Legendary']]
+#*******************************#
+# we tidy data with melt(),example:
+data_new=data.head()    
+# id_vars=what we do not wish to melt
+# value_vars=what we want to melt
+melted_data_new=pd.melt(frame=data_new,id_vars='Name',value_vars=['Attack','Defense'])
+# pivoting data 旋转数据
+data_melted_pivot=melted_data_new.pivot(index='Name',columns='variable',values='value')
+#*******************************#
+# concatenating data 拼接数据
+concat_data_row=pd.concat([datahead,datatial],axis=0,ignore_index=True)
