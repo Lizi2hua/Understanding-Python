@@ -5,6 +5,7 @@ for i in range(10):
     names.append(i)
     print(names)
 print("------------------------------")
+# ***************************************
 #迭代器
 print("use iterator to generate list")
 list1=[]

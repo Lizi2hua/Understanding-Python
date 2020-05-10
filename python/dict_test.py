@@ -21,6 +21,7 @@ print(dict3)
 print('----------------------------')
 import random
 # #字典的拼接
+# ****************************************#
 dict4={}.fromkeys([12,3,4],2)
 dict5={}.fromkeys(random.sample('zzsdadadadqwrwrfsfhgrbejrg',5),random.sample('zzsdadadadqwrwrfsfhgrbejrg',1))
 dict4.update(dict5)
@@ -37,6 +38,7 @@ print('----------------------------')
 for i in dict4:
     print(i,dict4[i])
 print('-----------exercise----------------')
+#****************************************#
 #exercise
 #{‘k0’: 0, ‘k1’: 1, ‘k2’: 2, ‘k3’: 3, ‘k4’: 4, ‘k5’: 5, ‘k6’: 6, ‘k7’: 7, ‘k8’: 8, ‘k9’: 9}
 # 请把这个dict中key大于5的值value打印出来。
