@@ -50,8 +50,9 @@ def moveZeroes(list):
         list.append(0)
     print(list)
 
-list4=[0,5,0,4,78,0,0,4,0,9,0,6,7]
+
+list4 = [0, 5, 0, 4, 78, 0, 0, 4, 0, 9, 0, 6, 7]
 print(list4)
-list_changed=moveZeroes(list4)
+list_changed = moveZeroes(list4)
 print(list_changed)
 # TypeError
