@@ -1,13 +1,12 @@
+# https://blog.csdn.net/u013177568/article/details/62432761
 # ***********************************#
 import argparse
-import time
-
+# 1.声明一个parser
 parser = argparse.ArgumentParser()
 # ***********************************#
-parser.add_argument('x', help='x_axis', type=int)
-parser.add_argument('y', help='y_axis', type=int)
-args = parser.parse_args
-x = args.
-y = args.y
-print(x, y)
-time.sleep(5)
+# 2.添加一个参数
+parser.add_argument("path",help="文件的路径",default="请输入文件路径") #位置参数，表示第一个出现的参数赋值给parg
+# 3.读取命令行参数
+args=parser.parse_args()
+# 4.调用这些参数
+print(args.path)
