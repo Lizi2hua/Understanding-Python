@@ -1,4 +1,4 @@
-import numpy
+import numpy01
 
 # !!!只针对一维list情况
 # 数据类型归一化
@@ -19,8 +19,8 @@ def min_max_scaling(list):
 # print(new_list)
 # pass
 def z_score_norm(list):
-    mean=numpy.mean(list)
-    std=numpy.std(list)
+    mean=numpy01.mean(list)
+    std=numpy01.std(list)
     new_list=[]
     for i in range(len(list)):
         tmp=(list[i]-mean)/std

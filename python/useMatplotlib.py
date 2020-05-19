@@ -5,7 +5,7 @@ Created on Fri May 15 12:45:23 2020
 @author: Natuski
 """
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy01 as np
 #plot(x,y)
 #绘制三角函数
 #生成三角函数

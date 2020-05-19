@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 # plot(​x, y​)
-import numpy as np
+import numpy01 as np
 
 #需要改
 # python list除法不支持，用np
