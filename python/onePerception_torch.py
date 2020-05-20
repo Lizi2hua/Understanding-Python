@@ -29,13 +29,15 @@ if __name__ == '__main__':
     opt = optim.SGD(Linear.parameters(), lr=0.1)
 
     # 定义损失函数
+    # ？
     loss = torch.nn.MSELoss()
     plt.ion()
     for epoch in range(30):
         for x, y in zip(_x, _y):
             # x通过Linear的构造函数传入forward，因为父类调用了forward，所以可行
             z = Linear(x)
-            # 定义损失
+            # 定义损失，(上面已经定义了,为啥还要定义）
+            # ？
             loss = (z - y) **2
             # 梯度清空，必须在求导之前
             opt.zero_grad()
