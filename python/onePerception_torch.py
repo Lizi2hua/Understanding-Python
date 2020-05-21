@@ -1,3 +1,4 @@
+
 import torch
 from torch import optim
 import matplotlib.pyplot as plt
@@ -35,6 +36,7 @@ if __name__ == '__main__':
     for epoch in range(30):
         for x, y in zip(_x, _y):
             # x通过Linear的构造函数传入forward，因为父类调用了forward，所以可行
+            # https://blog.csdn.net/u011501388/article/details/84062483具体解答
             z = Linear(x)
             # 定义损失，(上面已经定义了,为啥还要定义）
             # ？
@@ -49,7 +51,7 @@ if __name__ == '__main__':
             plt.cla()
             plt.plot(_x,_y,".")
             v = [Linear.forward(j) for j in _x]
-        plt.plot(_x,v)
-        plt.pause(0.01)
+            plt.plot(_x,v,'.')
+            plt.pause(0.01)
     plt.ioff()
     plt.show()
