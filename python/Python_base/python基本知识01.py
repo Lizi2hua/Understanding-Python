@@ -28,3 +28,28 @@ for n in range(2, 10):
     # print(n, 'is a prime number')
     else:
         print(n, 'is a prime number')
+
+"""continue表示循环继续执行下一次迭代"""
+for num in range(2,10):
+    if num%2==0:
+        print("foud an even number",num)
+        continue
+    print("found a number",num)
+
+"""pass 可以用来做占位符"""
+def initlog(*args):
+    pass
+
+"""函数体的第一行语句可以说可选的字符串文本，文档字符串docstring"""
+def fib(n):
+    """print a fibnacci series up to n."""
+    a,b=0,1
+    # 所哟函数中的变量赋值都是将值存在局部符号表，变量引用首先在局部符号表中查找
+    # 然后是包含函数的局部符号表，然后是全局符号表，最后是内置名字表。
+    while  a<b:
+        print(a,end='')
+        a,b=b,a+b
+    print()
+
+
+
