@@ -6,17 +6,18 @@ import numpy as np
 device = torch.device('cuda')
 
 x_ = torch.linspace(-1, 1, 100).reshape(100, 1)
-y =2*torch.sin(x_)+3*torch.cos(x_)
-y_ = torch.normal(y, 0.05)
+y_=2*torch.sin(x_)+3*torch.cos(x_)+1/2*torch.sin(x_)+8*torch.cos(x_)**2
+# y_ = torch.normal(y, 0.05)
 
 
 class FCNet(torch.nn.Module):
     def __init__(self):
         super(FCNet, self).__init__()
-        self.fc1 = torch.nn.Linear(1, 300)
-        self.relu = torch.nn.ReLU()
-        self.fc2 = torch.nn.Linear(300, 300)
-        self.fc3 = torch.nn.Linear(300, 1)
+        self.fc1 = torch.nn.Linear(1, 512)
+        self.relu = torch.nn.ReLU6()
+        # self.relu = torch.nn.LeakyReLU()
+        self.fc2 = torch.nn.Linear(512, 512)
+        self.fc3 = torch.nn.Linear(512, 1)
 
     def forward(self, x):
         out1 = self.fc1(x)
@@ -31,7 +32,7 @@ if __name__ == '__main__':
     fc = FCNet()
     opt = optim.Adam(fc.parameters())
     loss = torch.nn.MSELoss()
-    for e in range(128):
+    for e in range(512):
     # for x, y in zip(x_, y_):
     # for i in range(len(x_)):
     #     x_ = x_[i]
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         v = [fc.forward(j) for j in x_]
         plt.plot(x_, y_,'.')
         plt.plot(x_, v)
-        plt.pause(0.1)
+        plt.pause(0.01)
         plt.cla()
     plt.show()
 
