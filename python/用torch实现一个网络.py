@@ -1,4 +1,5 @@
 import torch
+
 import matplotlib.pyplot as plt
 from torch import optim
 import numpy as np
