@@ -7,11 +7,11 @@ import numpy as np
 import copy
 
 # 生成数据
-x = np.array([i for i in range(0, 100)],dtype=np.float)
+x = np.array([i for i in range(0, 1000,10)],dtype=np.float)
 x=torch.from_numpy(x)
 x=x.reshape(100,1)
-y = torch.sin(x / 100) ** 2 + 0.3 * torch.cos(x / 50) ** 3 + 4.3 * torch.sin(x / 15) ** 4
-
+# y = torch.sin(x / 100) ** 2 + 0.3 * torch.cos(x / 50) ** 3 + 4.3 * torch.sin(x / 15) ** 4
+y = torch.sin(x / 100)#全连接网络无法很好拟合三角函数
 # plt.plot(x,y,'.')
 # plt.show()
 
@@ -35,7 +35,7 @@ class FCNet(nn.Module):
         self.b5 = nn.Parameter(torch.randn(1))
 
     def forward(self, x):
-        fc1 = F.relu(torch.matmul(x, self.w1) + self.b1)
+        fc1 = torch.sigmoid(torch.matmul(x, self.w1) + self.b1)
         fc2 = F.relu(torch.matmul(fc1, self.w2) + self.b2)
         fc3 = F.relu(torch.matmul(fc2, self.w3) + self.b3)
         fc4 = F.relu(torch.matmul(fc3, self.w4) + self.b4)
@@ -43,24 +43,24 @@ class FCNet(nn.Module):
         return fc5
 
 
-# if "__name__" == "__main__":
-net = FCNet()
-optim = torch.optim.Adam(net.parameters(),lr=0.1)
-loss_func = nn.MSELoss()
-plt.ion()
-for i in range(10000):
-    out = net(x.float())
-    loss = loss_func(out, y.float())
+if __name__ == "__main__":
+    net = FCNet()
+    optim = torch.optim.Adam(net.parameters(),lr=0.1)
+    loss_func = nn.MSELoss()
+    plt.ion()
+    for i in range(1000000):
+        out = net(x.float())
+        loss = loss_func(out, y.float())
 
-    optim.zero_grad()
-    loss.backward()
-    optim.step()
+        optim.zero_grad()
+        loss.backward()
+        optim.step()
 
-    if i % 10 == 0:
-        plt.cla()
-        plt.scatter(x, y)
-        plt.plot(x, out.detach().numpy(), 'r')
-        plt.pause(0.1)
-        print(loss.item())
-plt.ioff()
-plt.show()
+        if i % 1000 == 0:
+            plt.cla()
+            plt.scatter(x, y)
+            plt.plot(x, out.detach().numpy(), 'r')
+            plt.pause(0.1)
+            print(loss.item())
+    plt.ioff()
+    plt.show()
