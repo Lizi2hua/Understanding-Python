@@ -1,6 +1,3 @@
-from torch import nn
-import torch.nn.functional as F
-import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 import os
@@ -25,8 +22,3 @@ def convert():
 
 # os.remove(r"C:/Users/Administrator/Desktop/verifyCode/grayscale")这一行需要权限，不remove的话使用前删除
 # convert()
-
-
-def onehot(dir):
-    """使用torch.nn.functional.one_hot"""
-

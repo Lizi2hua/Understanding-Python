@@ -1,5 +1,8 @@
-
-a=""
-for i in range(5):
-    a=a+str(i)
-    print(a)
+with open(r"C:\Users\Administrator\Desktop\verifyCode\label\label.txt","r") as f:
+    data=f.readlines()
+    #
+    # while data:
+    #     print(data)
+    #     data=f.readline()
+    print(data)
+    print(type(data))
