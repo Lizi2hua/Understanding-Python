@@ -10,7 +10,6 @@ w, h, c = img_data.shape
 img_data = img_data.reshape(2, w // 2, 2, h // 2, c)
 # 换轴
 img_data=img_data.transpose(0,2,1,3,4)
-
 img_data=img_data.reshape(-1,w//2,h//2,3)
 
 img_data=np.split(img_data,4,axis=0)

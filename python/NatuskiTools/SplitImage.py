@@ -1,36 +1,19 @@
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-# 外部输入参数
-top_x=20
-top_y=20
-botton_x=200
-botton_y=200
+import os
 
-# 第一步：读取数据
-# 使用绝对路径
-input_dir=r"testpic.jpg"
-img=Image.open(input_dir)
+def SplitImage(top_x,top_y,bottom_x,bottom_y,input_dir,name):
+    "return a ndarray "
+    img=Image.open(input_dir+'/'+name)
+    img_arr=np.array(img)
 
-# 第二步：读取数据的描述性信息
-img_arr=np.array(img)
-# 转换成numpy后w,h,c变成h,w,c!!!!
-plt.imshow(img_arr)
-plt.show()
-h,w,c=img_arr.shape
-print(h,w,c)
+    return img_arr[top_y:bottom_y,top_x:bottom_x]
 
-# 第三步：切割图像
-# 1.使用切片。保留原图片
-# 2.将图片切割成可分的任意份输出中间那一份
-"w方向切片"
-img_arr_scliceW=img_arr[:,:200]
-plt.imshow(img_arr_scliceW)
-"h放向切片"
-img_arr_scliceH=img_arr[:200,:,:]
-# img_arr_scliceC=img_arr[:,:,:1] 通道方向切片
-plt.imshow(img_arr_scliceH)
-plt.show()
-
-
-
+# input_dir=r"C://Users/李梓桦/Desktop/培训V20200507/CODE/python/NatuskiTools"
+#
+# img_sliced=SplitImage(top_x=100,top_y=100,bottom_x=200,bottom_y=200,
+#                       input_dir=input_dir,name="testpic.jpg")
+# plt.imshow(img_sliced)
+# plt.show()
+#
