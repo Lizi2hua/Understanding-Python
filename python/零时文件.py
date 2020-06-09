@@ -9,6 +9,6 @@
 import numpy as np
 from PIL import Image
 
-
+a=np.array([1232])
 
 
