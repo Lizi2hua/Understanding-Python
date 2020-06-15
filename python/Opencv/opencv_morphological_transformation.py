@@ -44,8 +44,8 @@ while True:
     # 礼帽操作
     cv2.imshow('origin',img)
     # cv2.imshow('dilated',dst)
-    # cv2.imshow('erode',dst1)
-    cv2.imshow('open', dst2)
+    cv2.imshow('erode',dst1)
+    # cv2.imshow('open', dst2)
     cv2.imshow('close', dst3)
     cv2.imshow('gradient',dst4)
     cv2.waitKey(2500)
