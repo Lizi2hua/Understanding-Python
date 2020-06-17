@@ -6,13 +6,17 @@ img=cv2.imread('images/train_wheel.jpg')
 abs=cv2.convertScaleAbs(img,alpha=4)
 
 # 锐化，提高分辨率
-laplacian=cv2.Laplacian(abs,-1)
+# laplacian=cv2.Laplacian(abs,-1)
 
+guass=cv2.GaussianBlur(abs,(3,3),10)
 #开操作,去噪声
-open=cv2.morphologyEx(laplacian,cv2.MORPH_OPEN,(3,3))
+# open=cv2.morphologyEx(abs,cv2.MORPH_OPEN,(3,3))
 
 # canny
-canny=cv2.Canny(open,100,200)
+canny=cv2.Canny(guass,100,200)
 
-cv2.imshow('processed',open)
+# range
+# ran=cv2.inRange(abs,120,200)
+cv2.imshow('processed',abs)
+cv2.imshow('processed1',ran)
 cv2.waitKey(0)
