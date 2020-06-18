@@ -251,6 +251,51 @@ cv2.imshow('canny',canny)
 
 
 
+## 5. 图像金字塔
+
+​		图像金字塔是图像处理和计算机视觉中常用的概念，常用于**多尺度图像处理（multiscale processing)**领域。早年的图像匹配、识别等算法中都用到了图像金字塔。
+
+### 5.1 高斯金字塔
+
+​		高斯金字塔是一种下采样方式，如下图所示。底层为原图，每向上一层则是通过高斯滤波和1/2采样，即去掉偶数列和行。高斯金子塔也能进行上采样（即放大操作）
+
+<img src="C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\guassian_prymid.png" alt="guassian_prymid" style="zoom:80%;" />
+
+```python
+import cv2
+img=cv2.imread('images/1.jpg')
+for i in range(5):
+    cv2.imshow(f'img{i}',img)
+    # img=cv2.pyrUp(img) 放大，会变得越来越模糊
+    img=cv2.pyrDown(img) #缩小
+cv2.waitKey(0)
+
+```
+
+
+
+### 5.2 拉普拉斯金字塔
+
+​		在进行高斯金字塔运算时，由于补断进行高斯滤波和下采样，丢失了许多高频信号（边缘信息）。拉普拉斯金字塔的目的就是保存这些高频信号，**保存这些高频信号的方式是保存差分图**。拉普拉斯金字塔由高斯金字塔计算得来。
+$$
+L_i=G_i-PryUp(Gi+1)
+$$
+
+~~~python	
+import cv2
+img=cv2.imread('images/1.jpg')
+img_down=cv2.pyrDown(img)
+img_up=cv2.pyrUp(img_down)
+# 这一步图片变得模糊
+cv2.imshow('0',img)
+cv2.imshow('1',img_up)
+img_new=cv2.subtract(img,img_up)
+# 这一步得到边缘图像
+cv2.imshow('2',img_new)
+cv2.waitKey(0)
+
+~~~
+
 
 
 
@@ -278,3 +323,5 @@ cv2.imshow('canny',canny)
 [CNN可视化]https://poloclub.github.io/cnn-explainer/
 
 [Canny算法]：[https://baike.baidu.com/item/canny%E7%AE%97%E6%B3%95/8439208?fr=aladdin](https://baike.baidu.com/item/canny算法/8439208?fr=aladdin)
+
+[图像金字塔]https://www.jianshu.com/p/e3570a9216a6
