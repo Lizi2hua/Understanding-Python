@@ -1,17 +1,21 @@
 import cv2
-
+import numpy as np
 
 # 创建视频对象
 # cap=cv2.VideoCapture('http://ivi.bupt.edu.cn/hls/cctv1.m3u8')
-cap=cv2.VideoCapture(r'C:\Users\Administrator\Desktop\test.mp4')
+# cap=cv2.VideoCapture(r'C:\Users\Administrator\Desktop\test.mp4')
+
+cap=cv2.VideoCapture(r'C:\Users\Administrator\Desktop\lane.mp4')
+
 # cv2.VideoCapture(0)
 # 0代表摄像头
 while True:
     ret,frame=cap.read()
 #     ret bool型，表示是否读取成功，frame每帧画面
+#     frame=np.swapaxes(frame,1,0)
     frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     # print(frame)
-    resize_factor=1/25
+    resize_factor=1/1
     w,h=frame.shape
     frame=cv2.resize(frame,(int(w*resize_factor),int(h*resize_factor)))
     w,h=frame.shape
