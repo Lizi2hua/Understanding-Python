@@ -172,7 +172,7 @@ $$
 
 1. ​	在图像的平坦区域，像素值变化很小，那么像素差值接近于0，对应的像素范围域权重接近于1，此时空间域权重起主要作用，相当于进行高斯模糊；
 
-2. 在图像的边缘区域，像素值变化很大，那么像素差值大，对应的像素范围域权重变大，即使距离远空间域权重小，加上像素域权重总的系数也较大，从而保护了边缘的信息。
+2. ​    在图像的边缘区域，像素值变化很大，那么像素差值大，对应的像素范围域权重变大，即使距离远空间域权重小，加上像素域权重总的系数也较大，从而保护了边缘的信息。
 
    <img src="C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\bialteral_Filter_.png" alt="bialteral_Filter_" style="zoom: 67%;" />
 
@@ -296,6 +296,110 @@ cv2.waitKey(0)
 
 ~~~
 
+## 6. 霍夫（Hough）变换
+
+​		直线霍夫变换通过将笛卡尔坐标系中的直线表达式：
+$$
+y=kx+b
+$$
+​		转换到参数空间：
+$$
+b=-xk+y
+$$
+​		如下图所示，霍夫空间的一条直线可在笛卡尔坐标中唯一确定一个点，反之，在笛卡尔坐标系中的一个点，在霍夫空间中由无数条直线。判断**三个点**是否在同一条直线上，只需判断在霍夫空间中三个点的确定的直线是否相交。
+
+​		但是，***如果直线接近竖直方向，则会由于k的值都接近无穷而使得计算量增大***，此时我们使用直线的极坐标方程来表示直线。在使用Hough变换前一般要进行Canny操作。
+$$
+\rho=xcos\theta+ysin\theta
+$$
+
+
+![hough_trans](C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\hough_trans.jpg)
+
+
+
+<img src="C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\v2-8de2df486bdb0c2fc81a8714496207a7_r.jpg" alt="v2-8de2df486bdb0c2fc81a8714496207a7_r" style="zoom:40%;" />
+
+```python
+import  cv2
+import numpy as np
+
+img=cv2.imread("images/2.jpg")
+
+gauss=cv2.GaussianBlur(img,(3,3),0)
+canny=cv2.Canny(gauss,100,200)
+
+# lines=cv2.HoughLinesP()是对HoughLines的改进
+lines=cv2.HoughLines(canny,1,np.pi/180,40)
+# 返回值 lines 中的每个元素都是一对浮点数，表示检测到的直线的参数，即（r,θ），是 numpy.ndarray 类型。
+
+```
+
+
+
+## 7. 分水岭算法
+
+​		可以将图像中每一个像素点的灰度值看作该点的海拔高度。模拟泛洪算法的基本思想是：假设在**每个区域最小值**的位置上打一个洞并且让水以均匀的上升速率从洞中涌出（腐蚀操作），从低到高淹没整个地形。*当处在不同的汇聚盆地中的水将要聚合在一起时，修建的大坝将阻止聚合。*水将达到在水线上只能见到各个水坝的顶部这样一个程度。**这些大坝的边界对应于分水岭的分割线。所以，它们是由分水岭算法提取出来的(连续的)边界线。** 
+
+​		如下图，原图像（灰度图）根据像素值大小转换成的梯度图。
+
+![water_shed_alogrithm1](C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\water_shed_alogrithm1.gif)
+
+<img src="C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\地形图.png" alt="地形图" style="zoom:75%;" />
+
+​		算法过程如下图所示。
+
+![water_shed_alogrithm](C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\water_shed_alogrithm.gif)
+
+​		**分水岭算法对噪声的影响非常敏感**，所以在真实图像中，由于噪声点或者其它干扰因素的存在，使用分水岭算法常常存在过度分割的现象，这是因为很多很小的局部极值点的存在。
+
+​		**可以通过融入预处理步骤来限制允许存在的区域的数目**。通过引入**标记**来控制过度分割。一个标记是属于一幅图像的一个连通分量。与**感兴趣物体**相联系的标记成为**内部标记**，与**背景相关联**的标记称为**外部标记**。
+
+​		通常的标记图像，都是**在某个区域定义了一些灰度层级**，在这个区域的洪水淹没过程中，**水平面都是从定义的高度开始的**，这样可以避免一些很小的噪声极值区域的分割。
+
+![water_shed_with_marker](C:\Users\Administrator\Desktop\Project：777\CODE\python\Note\src\water_shed_with_marker.gif)
+
+
+
+## 8. 平均池化（Average Pooling)
+
+​	将图片按照固定大小的网格分割，网格内像素的平均值代表这个网格的值。我们将这种把图片使用均等大小网格分割，并求网格内代表值的操作称为**池化（Pooling）**。
+
+​	实现代码如下：
+
+```python
+import numpy as  np
+import cv2
+import glob
+
+# 读图
+img_path=glob.glob(r"../Opencv/images/*.jpg")
+grid_size=(8,8)
+
+for i in range(len(img_path)):
+    img=cv2.imread(img_path[i])
+    # 平均池化
+    h,w,c=img.shape
+    g_w,g_h=grid_size
+    # 算出需要多少个网格来覆盖图片
+    h_nums=int(h/g_h)
+    w_nums=int(w/g_w)
+    # 图片是3d的，对每一层做池化
+    for i in range(h_nums):
+        for j in range(w_nums):
+            for k in range(c):
+                img[i*g_h:(i+1)*g_h,j*g_w:(j+1)*g_w,k]=np.mean(img[i*g_h:(i+1)*g_h,j*g_w:(j+1)*g_w,k]).astype(np.uint8)
+
+    # 图片的w,h
+    # 缺陷：不能整除g_w,g_h的情况下处理?
+    cv2.imshow('pic',img)
+    cv2.waitKey(1500)
+```
+
+
+
+
+
 
 
 
@@ -325,3 +429,5 @@ cv2.waitKey(0)
 [Canny算法]：[https://baike.baidu.com/item/canny%E7%AE%97%E6%B3%95/8439208?fr=aladdin](https://baike.baidu.com/item/canny算法/8439208?fr=aladdin)
 
 [图像金字塔]https://www.jianshu.com/p/e3570a9216a6
+
+[分水岭算法]https://blog.csdn.net/Lemon_jay/article/details/89355937
