@@ -1,4 +1,7 @@
-import numpy as np
-arr=np.array([[[1,1,1]]])
-arr_1=np.pad(arr,(1,1),constant_values=(0,2))
-print(arr_1)
+from sklearn import  linear_model
+x=[[0,0],[1,1],[2,2]]
+y=[0,1,2]
+model=linear_model.LinearRegression()
+model.fit(x,y)
+print(model.coef_)
+print(model.intercept_)

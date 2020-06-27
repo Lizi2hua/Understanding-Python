@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0656e38f-9954-4003-a2a5-7f28f9743f7c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../Opencv/images/lane.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Opencv/opencv_lane_detection.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Opencv/opencv_preprocess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Opencv/opencv_read_videos.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Opencv/opencv_read_videos.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../临时/tool_box/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../临时/tool_box/json_reader.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../临时/tool_box/pytorch_dataset.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../临时/tool_box/临时代码.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Note/Pytorch.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Note/Pytorch.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +21,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -42,5 +35,11 @@
       <updated>1592753365021</updated>
     </task>
     <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1074" y="227" key="FileChooserDialogImpl" timestamp="1593170386914">
+      <screen x="0" y="0" width="1707" height="929" />
+    </state>
+    <state x="1074" y="227" key="FileChooserDialogImpl/0.0.1707.929@0.0.1707.929" timestamp="1593170386914" />
   </component>
 </project>
