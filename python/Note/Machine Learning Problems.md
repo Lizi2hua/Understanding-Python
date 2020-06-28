@@ -8,11 +8,11 @@
 $$
 min_w||Xw-y||_2^2
 $$
-L1正则化：
+加L1正则化：
 $$
 min_w||Xw-y||_2^2+\alpha||w||_1
 $$
-L2正则化：
+加L2正则化：
 $$
 min_w||Xw-y||_2^2+\alpha||w||_2^2
 $$
@@ -20,17 +20,17 @@ $$
 
 ​		VC 维是衡量函数类的复杂度的一种方式，通过**评估函数类中函数的弯曲程度**实现。在平面中，存在两类点，一类点类别为0，另一类为1。如果VC维等于3，即平面任意3个点总能被一条直线分开，4个点却不行。**一般地**，***p***维线性指示函数VC维为***p+1***。
 
-<img src="C:\Users\李梓桦\Desktop\培训V20200507\CODE\python\Note\src\line_cv.png" alt="line_cv" style="zoom:80%;" />
+<img src="\src\line_cv.png" alt="line_cv" style="zoom:80%;" />
 
 ​		下图是无穷VC维，对于实轴上的任意多个点，总存在一个函数能将他们分开。
 
-<img src="C:\Users\李梓桦\Desktop\培训V20200507\CODE\python\Note\src\vc_n.jpg" alt="vc_n" style="zoom: 80%;" />
+<img src="\src\vc_n.jpg" alt="vc_n" style="zoom: 80%;" />
 
 ### 1.1 从结构风险最小化角度
 
 ​		结构风险最小化（Structural Risk Minimizatiom）的基本思想是在保证**分类精度(经验风险)**时，降低模型的VC维才能取得较小的实际风险，即对未来的样本有较好的推广性。以w1和w2组成的解的空间为例：
 
-<img src="C:\Users\李梓桦\Desktop\培训V20200507\CODE\python\Note\src\L1_L2regualarzition.jpg" alt="L1_L2regualarzition" style="zoom:80%;" />
+<img src="\src\L1_L2regualarzition.jpg" alt="L1_L2regualarzition" style="zoom:80%;" />
 
 
 
@@ -38,7 +38,7 @@ $$
 
 - 优化需要同时最小化两项。如果不加L1正则化得话，优化结果为圆圈内部紫色的部分。对于w1和w2来说，值域所围成的形状为菱形（|w1|+|w2|=F）。对于红色曲线，每一点都可以做一个菱形(曲线上每个w1,w2的取值都可以确定一个菱形)。由图可见，当w2=0时候，两参数确定的菱形最小。**这也是L1更容易得到稀疏解得原因。**
 
-<img src="C:\Users\李梓桦\Desktop\培训V20200507\CODE\python\Note\src\l1.jpg" alt="l1" style="zoom:50%;" />
+<img src="\src\l1.jpg" alt="l1" style="zoom:50%;" />
 
 - L2正则化同理，不过L2正则化不容易交于坐标轴上，但值仍然会靠近坐标轴。
 
@@ -55,14 +55,15 @@ $$
 f(x)=\frac{1}{2\lambda}e^{-\frac{|x-\mu|}{\lambda}},\lambda，\mu为常数，且\lambda为常数
 $$
 
-
 ​		如果ω服从标准拉普拉斯分布，那么ω取0的概率非常大。
 
-​                                     <img src="C:\Users\李梓桦\Desktop\培训V20200507\CODE\python\Note\src\laplace.jpg" alt="laplace" style="zoom:80%;" />	
+<img src="\src\laplace.jpg" alt="laplace" style="zoom:80%;" />
+
+​                            	
 
 ​		如果ω服从标准高斯分布，那么ω取0附近值的概率非常大。
 
-<img src="C:\Users\李梓桦\Desktop\培训V20200507\CODE\python\Note\src\gauss_dis.png" alt="gauss_dis" style="zoom:80%;" />
+<img src="\src\gauss_dis.png" alt="gauss_dis" style="zoom:80%;" />
 
 ### 1.3 总结
 
@@ -72,19 +73,19 @@ $$
 
 ​		
 
-## 3.回归（Regression）
+## 2.回归（Regression）
 
-​		回归，事物总是朝着某种**平均**发展，也可以说是朝着事物得某种本来得面目发展。
+​		*回归，事物总是朝着某种**平均**发展，也可以说是朝着事物得某种本来得面目发展。*
 
-### 3.1 什么是回归
+### 2.1 什么是回归
 
 ​		回归是一种建立预测模型的方法，这种方法常用于预测分析，时间序列模型以及变量之间的因果关系。在回归任务中，计算机程序需要对给定输入预测输出数值。*除了返回结果的形式不一样外，这类问题和分类问题是很像的。***若我们预测的是离散值，此类任务为`分类`，若我们预测的是连续值，此类任务为`回归`**
 
-### 3.2 回归模型[^1]
+### 2.2 回归模型[^1]
 
-​		常用的回归模型有`线性回归（Linear Regression）`,`岭回归（Ridge Regression）`,`LASSO回归`，`弹性网络（ElasticNet）`，`核岭回归（Kernel Ridge Regression,KRR）`
+​		常用的回归模型有`线性回归（Linear Regression）`,`岭回归（Ridge Regression）`,`LASSO回归`，`弹性网络（ElasticNet）`，`核岭回归（Kernel Ridge Regression,KRR）`(带有核函数的岭回归)，此外**logistics回归不是回归问题，而是分类问题**。
 
-#### 3.2.1  广义线性模型
+#### 2.2.1  广义线性模型
 
 ​		目标值$y$是输入变量$x$的线性组合。如果有有$\hat{y}$是预测值，则满足：
 $$
@@ -105,12 +106,212 @@ from sklearn import  linear_model
 x=[[0,0],[1,1],[2,2]]
 y=[0,1,2]
 model=linear_model.LinearRegression()
+#使用fit拟合
+model.fit(x,y)
+#w=（w1,w2,...,wn）存在cofe_中
+print(model.coef_)
+#w0，截距存在intercept_中
+print(model.intercept_)
+```
+
+### 2.2.1 岭回归
+
+​		岭回归就是**L2正则化**，岭系数最小化的是带罚项的残差平方和。$\alpha$的值越大，由于L2正则化是迫使$w$趋于标准正态分布，$w$越趋于标准正态分布。下图[^3]显示了岭系数（Ridge coefficient）对正则化的 影响，每个颜色代表系数向量$w$的不同特征。
+
+​		当$\alpha$非常大时，正则化效应会主导平方损失函数，系数趋于零。在路径的末端，*随着α趋向于零，解趋向于普通最小二乘，系数呈现大的振荡。***在实际工作中，有必要对$\alpha$进行调整，使两者之间保持平衡。**
+$$
+min_w||Xw-y||_2^2+\alpha||w||_2^2
+$$
+<img src="src/ridge_alpha.jpg" alt="ridge_alpha" style="zoom:80%;" />
+
+​		这个例子还显示了将Ridge回归用于`病态矩阵`的有用性。**对于病态矩阵（ill-conditioned matrix）[^4]，输入数据较小的波动，得到的结果会具有很大的波动。**在这种情况下，设置一定的正则化系数来减少这种变异（噪声）是很有用的。
+
+使用如下代码实现上图：
+
+```python
+# Author: Fabian Pedregosa -- <fabian.pedregosa@inria.fr>
+# License: BSD 3 clause
+
+print(__doc__)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import linear_model
+
+# X is the 10x10 Hilbert matrix
+X = 1. / (np.arange(1, 11) + np.arange(0, 10)[:, np.newaxis])
+y = np.ones(10)
+
+# #############################################################################
+# Compute paths
+
+n_alphas = 200
+alphas = np.logspace(-10, -2, n_alphas)
+
+coefs = []
+for a in alphas:
+    ridge = linear_model.Ridge(alpha=a, fit_intercept=False)
+    ridge.fit(X, y)
+    coefs.append(ridge.coef_)
+
+# #############################################################################
+# Display results
+
+ax = plt.gca()
+
+ax.plot(alphas, coefs)
+ax.set_xscale('log')
+ax.set_xlim(ax.get_xlim()[::-1])  # reverse axis
+plt.xlabel('alpha')
+plt.ylabel('weights')
+plt.title('Ridge coefficients as a function of the regularization')
+plt.axis('tight')
+plt.show()
+```
+
+使用如下代码实现岭回归：
+
+```python
+from sklearn import linear_model
+x=[[0,0],[1,1],[2,2]]
+y=[0,1,2]
+model=linear_model.Ridge(alpha=0.5)
 model.fit(x,y)
 print(model.coef_)
 print(model.intercept_)
 ```
 
-### 3.2.1 岭回归
+### 2.2.2 LASSO回归
+
+​		LASSO,全称 Least Absolute Shrinkage and Selection Operator,该方法是一种压缩估计。通过加入L1正则化项来迫使一些回归系数$w$归为0,使得模型稀疏化，这意味着LASSO模型是一种较小的模型，在新的数据上也拥有较小的方差。
+$$
+min_w||Xw-y||_1
+$$
+LASSO类的实现使用了`坐标下降算法`。
+
+​		**LASSO用于稀疏数据的效果较好**
+
+​		使用不同的惩罚项(penalization)来重建CT图像[^5]：
+
+![ct_ing](src/ct_ing.png)
+
+使用 L1 惩罚的重建给出了一个零误差的结果（所有像素都成功地被标记为 0 或 1），即使在投影中加入了噪声。相比之下，L2惩罚(sklearn.linear_model.Ridge)会对像素产生大量的标注错误。与L1惩罚化相反，在重建的图像上观察到了重要的伪影。特别要注意在角落里分离像素的圆形伪影，这些伪影造成了比中心盘更少的投影。
+
+使用如下代码实现：
+
+```python
+from sklearn import linear_model
+x=[[0,0],[1,1],[2,2]]
+y=[0,1,2]
+model=linear_model.Lasso(alpha=0.5)
+model.fit(x,y)
+print(model.coef_)
+print(model.intercept_)
+```
+
+
+
+### 2.2.3 弹性网络
+
+​		弹性网络使用L1,L2范数作为先验正则项来训练线性回归模型，这种组合可以拟合**一个只有少量参数是非零的稀疏模型**，就像LASSO一样，但它仍然保持了一些类似于岭回归的正则性质。我们可以使用变量`l1_ratio`来控制L1和L2的`凸`线性组合。最小化的目标函数是：
+$$
+min_w\frac{1}{2n_{samples}}||Xw-y||_2^2+\alpha\rho||w||_1+\frac{\alpha(1-\rho)}{2}||w||_2^2
+$$
+​		弹性网络的两种正则化的组合一方面达到了LASSO缩减模型的效果，另一方面弹性网络在预测多个相关特征时候比LASSO更好。Lasso 很可能只随机考虑这些特征中的一个，而弹性网络更倾向于选择两个。
+
+```python
+from sklearn import linear_model
+x=[[0,0],[1,1],[2,2]]
+y=[0,1,2]
+model=linear_model.ElasticNet(alpha=0.5,l1_ratio=0.5)
+model.fit(x,y)
+print(model.coef_)
+print(model.intercept_)
+```
+
+
+
+## 3. 回归指标[^6]
+
+​		*一个随机变量的**方差**描述的是它的离散程度，也就是该变量与期望值的距离。*
+$$
+\sigma^2=\frac{\sum(X-\mu)}{N}
+$$
+
+### 3.1 可解释方差（Explained Variance Score）
+
+​		如果$\hat{y}$是预估的目标输出，$y$是相应的正确的目标输出，$Var$是方差，那么可解释方差定义如下：
+$$
+explained\_variance(y,\hat{y})=1-\frac{Var\{y-\hat{y}\}}{Var\{y\}}
+$$
+​		根据公式，**可解释方差为1最好，值越低越差。**
+
+​		当$Var\{y-\hat{y}\}=0$时，即全部预测对，也即可解释方差值为1，模型表现最好。
+
+​		**可解释方差能有负值**
+
+```python
+from sklearn.metrics import explained_variance_score
+# 可解释方差
+y_true=[3,-0.5,2,7]
+y_pred=[-10,0.0,0,10]
+print(explained_variance_score(y_true,y_pred))
+print(explained_variance_score(y_true,y_pred,multioutput='raw_values'))
+-->-4.1113490364025695
+-->[-4.11134904]
+```
+
+
+
+### 3.2 $R^2$评分
+
+​		也叫判定系数（coefficient of determination）,也叫可决系数、决定系数。指**在线性模型中，回归平方和[^7]与总离差平方和[^8]之比值，其数值等于相关系数的平方。**
+$$
+R^2\_score=1-\frac{\sum_{i=1}^n\{y_i-\hat{y_i}\}^2}{\sum_{i=1}^n\{y_i-\bar{y}\}^2} \\
+\bar{y}=\frac{\sum_{i=1}^ny_i}{n_{samples}}
+$$
+​		**当$R^2$评分值为1时，模型越好。**
+
+​		**同样，$R^2$也能为负值。**
+
+​	
+
+```python
+from sklearn.metrics import explained_variance_score,r2_score
+y_true=[3,-0.5,2,7]
+y_pred=[3,0.5,2,7]
+print(r2_score(y_true,y_pred))
+print(r2_score(y_true,y_pred,multioutput='raw_values'))
+-->-5.244111349036403
+-->[-5.24411135]
+```
+
+
+
+### 3.3均方误差和平均绝对误差
+
+均方误差（Mean Square Error）
+$$
+MSE(y,\hat{y})=\frac{1}{n_{samples}}\sum_{i=0}^{n_{samples}-1}(y_i-\hat{y_i})^2
+$$
+平均绝对误差（Mean Absolute Error）
+
+
+$$
+MSE(y,\hat{y})=\frac{1}{n_{samples}}\sum_{i=0}^{n_{samples}-1}|y_i-\hat{y_i}|
+$$
+
+```python
+from sklearn.metrics import mean_squared_error,mean_absolute_error
+y_true=[3,-0.5,2,7]
+y_pred=[-10,0.0,0,10]
+print(mean_squared_error(y_true,y_pred))
+print(mean_absolute_error(y_true,y_pred))
+-->45.5625
+-->4.625
+```
+
+
 
 
 
@@ -120,7 +321,7 @@ print(model.intercept_)
 
 
 
-![sklearn_model_select](C:\Users\李梓桦\Desktop\培训V20200507\CODE\python\Note\src\sklearn_model_select.jpg)
+![sklearn_model_select](\src\sklearn_model_select.jpg)
 
 ### x.1 使用sklearn构建机器学习模型的基本步骤
 
@@ -164,7 +365,7 @@ y_pred=knn.predict(x_test)
 print(accuracy_score(y_test,y_pred))
 ```
 
-
+### 
 
 ------
 
@@ -172,7 +373,12 @@ print(accuracy_score(y_test,y_pred))
 
 [^2]: 残差（residual）是指实际观测值与估计值（拟合值）之间的差。残差蕴含了有关模型基本假设的重要信息。如果回归模型正确的话， 我们可以将残差看作误差的观测值。利用残差所提供的信息，来考察模型假设的合理性及数据的可靠性称为残差分析。
 
-
+[^3]: https://scikit-learn.org/stable/auto_examples/linear_model/plot_ridge_path.html
+[^4]: https://blog.csdn.net/qq_18888869/article/details/82979590
+[^5]: https://scikit-learn.org/stable/auto_examples/applications/plot_tomography_l1_reconstruction.html
+[^6]: http://www.scikitlearn.com.cn/0.21.3/32/#334
+[^7]: 回归平方和（ESS,Explained Sum of Squares）,$ESS=\sum\{\hat{y}-y\}^2$
+[^8]: 离差平方和（SS,Sum of Squares of Debiations）,$SS=\sum\{x_i-\bar{x}\}^2$,反映了$x$与其数学期望$\bar{x}$的偏离程度。
 
 
 
@@ -184,3 +390,6 @@ print(accuracy_score(y_test,y_pred))
 
 [VC维]https://www.zhihu.com/question/23418822/answer/299969908
 
+
+
+[^4]: 
