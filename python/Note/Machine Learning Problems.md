@@ -36,7 +36,7 @@ $$
 
 对于L1正则化，如右图所示：
 
-- 优化需要同时最小化两项。如果不加L1正则化得话，优化结果为圆圈内部紫色的部分。对于w1和w2来说，值域所围成的形状为菱形（|w1|+|w2|=F）。对于红色曲线，每一点都可以做一个菱形(曲线上每个w1,w2的取值都可以确定一个菱形)。由图可见，当w2=0时候，两参数确定的菱形最小。**这也是L1更容易得到稀疏解得原因。**
+- 优化需要同时最小化两项。如果不加L1正则化得话，优化结果为圆圈内部紫色的部分。对于w1和w2来说，值域所围成的形状为菱形（|w1|+|w2|=F）。对于红色曲线，每一点都可以做一个菱形(曲线上每个w1,w2的取值都可以确定一个以原点为中心的菱形)。由图可见，当w2=0时候，两参数确定的菱形最小。**这也是L1更容易得到稀疏解得原因。**
 
 <img src="\src\l1.jpg" alt="l1" style="zoom:50%;" />
 
@@ -313,7 +313,115 @@ print(mean_absolute_error(y_true,y_pred))
 
 
 
+## 4. SVM与SVR
 
+​		SVM(Support Vector Machine),支持向量机。**是一种二分类模型**，它的基本模型是定义在**特征空间**，如下图$x$特征和$y$特征组成的二维特征空间，**间隔最大的线超平面($\frac{2}{||w||}$最大）**。SVM还可以使用**核技巧**使之成为非线性分类器。
+
+​		SVR(Support Vector Regression)，支持向量回归。SVR是SVM的分支，SVM要使线性超平面离支持向量最远，SVR要使线性超平面离支持向量最近。
+
+<img src="src/SVR.jpg" alt="SVR" style="zoom:50%;" />
+
+
+
+
+
+### 4.1 拉格朗日乘子法
+
+​		是一种**寻找变量受一个或多个条件所限制的多元函数极值的方法**。**该方法将以个有$n$个变量与$k$个约束条件的最优化问题转换为一个有$n+k$变量的方程组的极值问题，使其变量不受任何约束**
+
+定义：
+
+​		倘若二元函数，$z=f(x,y)$，和附加条件$g(x,y)=c$，寻找$z=f(x,y)$在附加条件下的极值点，即$z'=0$。
+
+​		先构建拉格朗日函数$F(x,y,\lambda)=f(x,y)+\lambda g(x,y)$,令$F$对$x,y,\lambda$（拉格朗日乘子）的一阶偏导等于零，即：
+$$
+F_x=f_x(x,y)+\lambda g_x(x,y)=0\\
+F_y=f_y(x,y)+\lambda g_y(x,y)=0\\
+F_\lambda=g(x,y)=c
+$$
+由上述方程解出$x,y，\lambda$，如此求得的$x,y$就是函数$z=f(x,y)$在附加条件$\phi(x,y)=0$下可能的极值点。
+
+​	
+
+<img src="src/Lagrange_multiplier.jpg" alt="Lagrange_multiplier" style="zoom:80%;" />
+
+### 4.2 SVM
+
+​		如下图所示，设超平面关于样本点的**几何间隔**[^9]为：
+
+![[公式]](https://www.zhihu.com/equation?tex=+%5Cgamma+_i%3Dy_i%5Cleft%28+%5Cfrac%7B%5Cboldsymbol%7Bw%7D%7D%7B%5ClVert+%5Cboldsymbol%7Bw%7D+%5CrVert%7D%5Ccdot+%5Cboldsymbol%7Bx%7D_%7B%5Cboldsymbol%7Bi%7D%7D%2B%5Cfrac%7Bb%7D%7B%5ClVert+%5Cboldsymbol%7Bw%7D+%5CrVert%7D+%5Cright%29+)
+
+那么样本到超平面的最小几何间隔为：
+$$
+\gamma=min_{i=1,2,...,n}\gamma_i
+$$
+<img src="src/SVM.jpg" alt="SVM" style="zoom:50%;" />
+
+**SVM训练分类器的算法是：寻找超平面，使正负样本都在超平面两侧，且样本到超平面的几何间隔最大，**数学描述如下：
+$$
+max_{w,b}  \ \gamma\\
+s.t.\  y_i(\frac{w}{||w||}x_i+\frac{b}{||w||}) \ge\gamma
+$$
+又因为最大化 ![[公式]](https://www.zhihu.com/equation?tex=+%5Cgamma+) ，等价于最大化 ![[公式]](https://www.zhihu.com/equation?tex=+%5Cfrac%7B1%7D%7B%5ClVert+%5Cboldsymbol%7Bw%7D+%5CrVert%7D) ，也就等价于最小化 ![[公式]](https://www.zhihu.com/equation?tex=+%5Cfrac%7B1%7D%7B2%7D%5ClVert+%5Cboldsymbol%7Bw%7D+%5CrVert+%5E2+) （ ![[公式]](https://www.zhihu.com/equation?tex=%5Cfrac%7B1%7D%7B2%7D) 是为了后面求导以后形式简洁，不影响结果），因此SVM模型的求解最大分割超平面问题又可以表示为以下约束最优化问题
+
+![[公式]](https://www.zhihu.com/equation?tex=+%5Cunderset%7B%5Cboldsymbol%7Bw%2C%7Db%7D%7B%5Cmin%7D%5C+%5Cfrac%7B1%7D%7B2%7D%5ClVert+%5Cboldsymbol%7Bw%7D+%5CrVert+%5E2+)
+
+![[公式]](https://www.zhihu.com/equation?tex=+s.t.%5C+%5C+y_i%5Cleft%28+%5Cboldsymbol%7Bw%7D%5Ccdot+%5Cboldsymbol%7Bx%7D_%7B%5Cboldsymbol%7Bi%7D%7D%2Bb+%5Cright%29+%5Cge+1%2C%5C+i%3D1%2C2%2C...%2CN+)
+
+将有约束的原始目标函数转换为无约束的新构造的拉格朗日目标函数:
+
+![[公式]](https://www.zhihu.com/equation?tex=L%5Cleft%28+%5Cboldsymbol%7Bw%2C%7Db%2C%5Cboldsymbol%7B%5Calpha+%7D+%5Cright%29+%3D%5Cfrac%7B1%7D%7B2%7D%5ClVert+%5Cboldsymbol%7Bw%7D+%5CrVert+%5E2-%5Csum_%7Bi%3D1%7D%5EN%7B%5Calpha+_i%5Cleft%28+y_i%5Cleft%28+%5Cboldsymbol%7Bw%7D%5Ccdot+%5Cboldsymbol%7Bx%7D_%7B%5Cboldsymbol%7Bi%7D%7D%2Bb+%5Cright%29+-1+%5Cright%29%7D+)
+
+~~对于二分类问题，$y(wx+b)>0$意味着分类正确，且值越大，分类的确信度越大。~
+
+可通过如下代码实现：
+
+```python
+#鸢尾花分类
+import numpy as np
+from sklearn import svm
+import  matplotlib.pyplot  as plt
+from sklearn import datasets
+
+iris=datasets.load_iris()
+data,target=iris["data"],iris["target"]
+x=np.array([data[:,0]]).reshape(150,-1)
+y=np.array([data[:,1]]).reshape(150,-1)
+data=np.concatenate((x,y),axis=1)
+target=np.where(target>=1,1,0)
+
+for i in range(len(target)):
+    if target[i]==1:
+        plt.scatter(x[i],y[i],color='black')
+    else:
+        plt.scatter(x[i],y[i],color='red')
+model=svm.SVC(C=15,kernel='linear')
+# C为惩罚因子，C越大，模型越容易过拟合
+model.fit(data,target)
+# 获取支持向量
+sv=model.support_vectors_
+x1=sv[:,0]
+y1=sv[:,1]
+plt.scatter(x1,y1,color='',marker='o',edgecolors='g',s=100)
+plt.show()
+
+```
+
+
+
+### 4.3 SVR
+
+​		SVR的优化方向：
+$$
+min_w\frac{1}{2}||w||^2\\
+s.t. y_i-w^tx_i-b\le\epsilon\\
+	w^tx_i+b-y_i\le\epsilon
+$$
+由公式可知，SVR只对间隔外（$\epsilon$）的样本进行惩罚，当样本点位于间隔内饰，不计算损失。这样做的结果是越来越多的点落在间隔内
+
+
+
+<img src="src/svr_svm.jpg" alt="svr_svm" style="zoom:50%;" />
 
 
 
@@ -379,6 +487,9 @@ print(accuracy_score(y_test,y_pred))
 [^6]: http://www.scikitlearn.com.cn/0.21.3/32/#334
 [^7]: 回归平方和（ESS,Explained Sum of Squares）,$ESS=\sum\{\hat{y}-y\}^2$
 [^8]: 离差平方和（SS,Sum of Squares of Debiations）,$SS=\sum\{x_i-\bar{x}\}^2$,反映了$x$与其数学期望$\bar{x}$的偏离程度。
+
+[^9]:  https://www.zhihu.com/question/20466147 ↩https://zhuanlan.zhihu.com/p/31886934
+[^]: 
 
 
 
