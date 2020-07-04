@@ -5,8 +5,8 @@ img=cv2.imread('images/car_num.jpg')
 # 计算B通道的直方图
 hist=cv2.calcHist([img],[0],None,[256],[0,256])
 
-# plt.plot(hist)
-# plt.show()
+plt.plot(hist)
+plt.show()
 
 # 直方图均衡化
 # 1.全局均衡化
