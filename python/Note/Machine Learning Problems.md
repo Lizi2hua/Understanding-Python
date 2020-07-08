@@ -1,3 +1,5 @@
+
+
 # 机器学习
 
 ## 1.L1正则化（Regularization）与L2正则化
@@ -317,14 +319,6 @@ print(mean_absolute_error(y_true,y_pred))
 
 ​		SVM(Support Vector Machine),支持向量机。**是一种二分类模型**，它的基本模型是定义在**特征空间**，如下图$x$特征和$y$特征组成的二维特征空间，**间隔最大的线超平面($\frac{2}{||w||}$最大）**。SVM还可以使用**核技巧**使之成为非线性分类器。
 
-​		SVR(Support Vector Regression)，支持向量回归。SVR是SVM的分支，SVM要使线性超平面离支持向量最远，SVR要使线性超平面离支持向量最近。
-
-<img src="src/SVR.jpg" alt="SVR" style="zoom:50%;" />
-
-
-
-
-
 ### 4.1 拉格朗日乘子法
 
 ​		是一种**寻找变量受一个或多个条件所限制的多元函数极值的方法**。**该方法将以个有$n$个变量与$k$个约束条件的最优化问题转换为一个有$n+k$变量的方程组的极值问题，使其变量不受任何约束**
@@ -425,15 +419,285 @@ $$
 
 
 
-## 5. 聚类
+## 5.  分类指标
 
-sklearn的
+### 5.1 混淆矩阵
 
-opencv的
+`from sklearn.metrics import confusion_matrix`
+
+```python
+confusion_matrix(y_true, y_pred, labels=None, sample_weight=None,
+                 normalize=None)
+```
+
+| 真实\预测 | 正例         | 负例         |
+| :-------: | ------------ | ------------ |
+|   正例    | 真正例（TP） | 假负例（FN） |
+|   负例    | 假正例（FP） | 真负例（TN） |
 
 
 
+### 5.2 准确率(accuarcy)
 
+​		`from sklearn.metrics import accuary_score `
+
+以下面公式计算得到：
+$$
+accuracy=\frac{TP+TN}{TP+FP+TN+FN}
+$$
+即计算的是**预测对的样例占总样本的比值**
+
+
+
+### 5.3 精确度（查准率，precision）
+
+​	`from sklearn.metircs import precision_score`
+
+以下公式得到：
+$$
+precision=\frac{TP}{TP+FP}
+$$
+即**以正例为参考指标，计算模型找到的真正例与找到的所有的正例之比，即找对正例的能力。**
+
+
+
+### 5.4 召回率（查全率，recall）
+
+`from sklearn.metrics import recall_score`
+
+以下公式计算得到：
+$$
+recall=\frac{TP}{TP+FN}
+$$
+即**以正例做参考，计算模型找到正例与所有正例的之比，即找回正例的能力**
+
+
+
+### 5.5 F1得分（F1-score）
+
+`from sklearn.metrics import f1_score`
+
+以下公式计算得到：
+$$
+f1-score=2*\frac{precision*recall}{precision+recall}
+$$
+即**是精确度和召回率的调和，如果只有一个高，那么f1得分也会低，两个都高,f1得分高**
+
+
+
+## 6. 模型评估[^10]
+
+​		从`sklearn.metrics`中调用
+
+|                                |                                                              |                                                           |
+| :----------------------------- | :----------------------------------------------------------: | --------------------------------------------------------- |
+| Scoring                        |                           Function                           | Comment                                                   |
+| **Classification**             |                                                              |                                                           |
+| **‘accuracy’**                 | [`metrics.accuracy_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score) |                                                           |
+| ‘balanced_accuracy’            | [`metrics.balanced_accuracy_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.balanced_accuracy_score.html#sklearn.metrics.balanced_accuracy_score) |                                                           |
+| ‘average_precision’            | [`metrics.average_precision_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score) |                                                           |
+| ‘neg_brier_score’              | [`metrics.brier_score_loss`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.brier_score_loss.html#sklearn.metrics.brier_score_loss) |                                                           |
+| **‘f1’**                       | [`metrics.f1_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score) | 二分类                                                    |
+| **‘f1_micro’**                 | [`metrics.f1_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score) | micro-averaged，多分类,通过先计算总体的TP,FN,FP，在计算f1 |
+| **‘f1_macro’**                 | [`metrics.f1_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score) | macro-averaged，多分类,先计算每个类的f1,然后平均          |
+| **‘f1_weighted’**              | [`metrics.f1_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score) | weighted average，多分类                                  |
+| ‘f1_samples’                   | [`metrics.f1_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score) | by multilabel sample                                      |
+| ‘neg_log_loss’                 | [`metrics.log_loss`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.log_loss.html#sklearn.metrics.log_loss) | requires `predict_proba` support                          |
+| **‘precision’ etc.**           | [`metrics.precision_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html#sklearn.metrics.precision_score) | suffixes apply as with ‘f1’                               |
+| **‘recall’ etc.**              | [`metrics.recall_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.recall_score.html#sklearn.metrics.recall_score) | suffixes apply as with ‘f1’                               |
+| ‘jaccard’ etc.                 | [`metrics.jaccard_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.jaccard_score.html#sklearn.metrics.jaccard_score) | suffixes apply as with ‘f1’                               |
+| ‘roc_auc’                      | [`metrics.roc_auc_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score) |                                                           |
+| ‘roc_auc_ovr’                  | [`metrics.roc_auc_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score) |                                                           |
+| ‘roc_auc_ovo’                  | [`metrics.roc_auc_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score) |                                                           |
+| ‘roc_auc_ovr_weighted’         | [`metrics.roc_auc_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score) |                                                           |
+| ‘roc_auc_ovo_weighted’         | [`metrics.roc_auc_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score) |                                                           |
+| **Clustering**                 |                                                              |                                                           |
+| ‘adjusted_mutual_info_score’   | [`metrics.adjusted_mutual_info_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_mutual_info_score.html#sklearn.metrics.adjusted_mutual_info_score) |                                                           |
+| ‘adjusted_rand_score’          | [`metrics.adjusted_rand_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html#sklearn.metrics.adjusted_rand_score) |                                                           |
+| ‘completeness_score’           | [`metrics.completeness_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.completeness_score.html#sklearn.metrics.completeness_score) |                                                           |
+| ‘fowlkes_mallows_score’        | [`metrics.fowlkes_mallows_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.fowlkes_mallows_score.html#sklearn.metrics.fowlkes_mallows_score) |                                                           |
+| ‘homogeneity_score’            | [`metrics.homogeneity_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.homogeneity_score.html#sklearn.metrics.homogeneity_score) |                                                           |
+| ‘mutual_info_score’            | [`metrics.mutual_info_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mutual_info_score.html#sklearn.metrics.mutual_info_score) |                                                           |
+| ‘normalized_mutual_info_score’ | [`metrics.normalized_mutual_info_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.normalized_mutual_info_score.html#sklearn.metrics.normalized_mutual_info_score) |                                                           |
+| ‘v_measure_score’              | [`metrics.v_measure_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.v_measure_score.html#sklearn.metrics.v_measure_score) |                                                           |
+| **Regression**                 |                                                              |                                                           |
+| **‘explained_variance’**       | [`metrics.explained_variance_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.explained_variance_score.html#sklearn.metrics.explained_variance_score) |                                                           |
+| ‘max_error’                    | [`metrics.max_error`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.max_error.html#sklearn.metrics.max_error) |                                                           |
+| ‘neg_mean_absolute_error’      | [`metrics.mean_absolute_error`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_absolute_error.html#sklearn.metrics.mean_absolute_error) |                                                           |
+| ‘neg_mean_squared_error’       | [`metrics.mean_squared_error`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_squared_error.html#sklearn.metrics.mean_squared_error) |                                                           |
+| ‘neg_root_mean_squared_error’  | [`metrics.mean_squared_error`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_squared_error.html#sklearn.metrics.mean_squared_error) |                                                           |
+| ‘neg_mean_squared_log_error’   | [`metrics.mean_squared_log_error`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_squared_log_error.html#sklearn.metrics.mean_squared_log_error) |                                                           |
+| ‘neg_median_absolute_error’    | [`metrics.median_absolute_error`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.median_absolute_error.html#sklearn.metrics.median_absolute_error) |                                                           |
+| **‘r2’**                       | [`metrics.r2_score`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html#sklearn.metrics.r2_score) |                                                           |
+| ‘neg_mean_poisson_deviance’    | [`metrics.mean_poisson_deviance`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_poisson_deviance.html#sklearn.metrics.mean_poisson_deviance) |                                                           |
+| ‘neg_mean_gamma_deviance’      | [`metrics.mean_gamma_deviance`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_gamma_deviance.html#sklearn.metrics.mean_gamma_deviance) |                                                           |
+
+用法举例:
+
+```python
+from sklearn import svm,datasets
+from sklearn.metrics import f1_score,classification_report
+from sklearn import  model_selection
+# 数据处理
+Data=datasets.load_iris()
+data=Data['data']
+target=Data['target']
+
+train_data,test_data,train_target,test_target=model_selection.train_test_split(data,target,random_state=0,test_size=0.1)
+# 模型训练
+clf=svm.SVC()
+clf.fit(train_data,train_target)
+# 模型评估
+pred=clf.predict(test_data)
+print(test_target)
+print(pred)
+print(f1_score(test_target,pred,average='micro'))
+print(classification_report(test_target,pred))
+-->[2 1 0 2 0 2 0 1 1 1 2 1 1 1 1]
+-->[2 1 0 2 0 2 0 1 1 1 2 1 1 1 1]
+-->1.0
+-->              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00        14
+           1       1.00      0.93      0.96        14
+           2       0.91      1.00      0.95        10
+
+    accuracy                           0.97        38
+   macro avg       0.97      0.98      0.97        38
+weighted avg       0.98      0.97      0.97        38
+```
+
+
+
+## 7. 数据预处理
+
+1. 明确特征类型（离散，连续）
+2. 缺失值补完[不上没有意义的数字，NaN]
+3. 标准化 N（0，1）,**将正态分布数据变为标准正态分布数据**。$N(0,1)=\frac{N(\mu,\sigma^2)-\mu}{\sigma}$
+4. 对类别数据进行one-hot编码
+5. 将需要转换成类别类型的数据进行二值化
+6. 正则化防过拟合
+7. 尝试多项式方法，寻找非线性关系 
+8. 根据实际问题分析是否对特征进行相应转换，（词向量）
+
+### 7.1 标准化（Standardization）
+
+​		许多模型和算法（RBF,SVM,L1,L2）都假设每个特征满足中心极限定理。**如果一个特征的方差比其他任何特征的方差都大，它会可能*主导*目标函数，使得Estimator不能如期从其他特征中正确学习。**
+
+​		**如果特征是一个稀疏矩阵，那么特征矩阵将不再稀疏，数据变质。**
+
+1. 中心化（将均值变为0）
+
+2. 方差规模化（将方差变为1）	
+
+   
+
+对数据进行标准化：
+
+`preprocessing.scale(data)`
+
+```python
+from sklearn import preprocessing
+import  numpy as np
+X_train=np.array([[1.,-1,2],
+                  [2.,0,0],
+                  [0,1,-1.]])
+x_sacled=preprocessing.scale(X_train)
+print(x_sacled)
+-->[[ 0.         -2.44948974  1.33630621]
+ [ 1.22474487  0.          0.53452248]
+ [-1.22474487  2.44948974 -1.87082869]]
+```
+
+`preprocessing`模块提供了`StandardScaler`来计算$\sigma,\mu$。通过这个方法可以将变换测试集后来**变换测试集**,这样可以确保训练集和测试集在同一个分布上。
+
+```python
+from sklearn import preprocessing
+import  numpy as np
+
+X_train=np.array([[1.,-1,2],
+                  [2.,0,0],
+                  [0,1,-1.]])
+y_train=np.array([[1.,-2,2],
+                  [2.,0,1],
+                  [0,2,-2.]])
+scaler=preprocessing.StandardScaler().fit(X_train)
+y_train=scaler.transform(y_train)
+print(y_train)
+-->[[ 0.         -2.44948974  1.33630621]
+ [ 1.22474487  0.          0.53452248]
+ [-1.22474487  2.44948974 -1.87082869]]
+```
+
+### 
+
+### 7.2 归一化（Normalization）
+
+​		`sklearn.preprocessing.normalize(X,norm='l2',axis=1)`
+
+​		归一化将数据按比例缩放，使之落入一个小的特定区间，**去除数据的单位限制，将其转化为无量纲的纯数（量纲为1？）；提升模型收敛速度；提高模型精度**
+
+```python
+X_norm1=preprocessing.normalize(X_train,norm='l2')
+print(X_norm1)
+X_norm2=preprocessing.normalize(X_train,norm='l1')
+print(X_norm2)
+X_norm3=preprocessing.normalize(X_train,norm='max')
+print(X_norm3)
+-->[[ 0.40824829 -0.40824829  0.81649658]
+ [ 1.          0.          0.        ]
+ [ 0.          0.70710678 -0.70710678]]
+-->[[ 0.25 -0.25  0.5 ]
+ [ 1.    0.    0.  ]
+ [ 0.    0.5  -0.5 ]]
+-->[[ 0.5 -0.5  1. ]
+ [ 1.   0.   0. ]
+ [ 0.   1.  -1. ]]
+
+Process finished with exit code 0
+
+```
+
+​		同标准化一样，`preprocessing`模块也提供了`Normalizer`来通过`Transformer`API来对不同的数据集进行同一种变换。
+
+```python
+normalizer=preprocessing.Normalizer().fit(X_train)
+print(normalizer.transform(y_train))
+-->[[ 0.         -0.87786229  0.47891314]
+ [ 0.91651514  0.          0.4       ]
+ [-0.36927447  0.73854895 -0.56407607]]
+```
+
+
+
+### 7.3 缺失值处理
+
+`from sklearn.impute import SimpleImputer`
+
+​		sklearn模型中，**默认输入的数据都是有意义的，如果有缺失数据NaN，则无法识别和计算。**缺失值**必须设置为NaN,可以通过np.nan实现。**
+
+​		补全策略：
+
+1. `mean`，使用均值替换
+2. `median`,使用中位数替换
+3. `most_frequent`，使用出现频率最高的替换
+4. `constant`，使用给定的常数替换
+
+```python
+from sklearn.impute import SimpleImputer
+imp1=SimpleImputer(missing_values=np.nan,strategy='mean')
+y_imp1=imp1.fit_transform([[np.nan,2],[6,np.nan],[7,6]])
+print(y_imp1)
+imp2=SimpleImputer(missing_values=np.nan,strategy='most_frequent')
+y_imp2=imp2.fit_transform([[np.nan,2],[6,np.nan],[7,6]])
+print(y_imp2)
+```
+
+
+
+## 8. 决策树、回归树
+
+待补充。2020-7-8
 
 
 
@@ -503,7 +767,7 @@ print(accuracy_score(y_test,y_pred))
 [^8]: 离差平方和（SS,Sum of Squares of Debiations）,$SS=\sum\{x_i-\bar{x}\}^2$,反映了$x$与其数学期望$\bar{x}$的偏离程度。
 
 [^9]:  https://www.zhihu.com/question/20466147 ↩https://zhuanlan.zhihu.com/p/31886934
-[^]: 
+[^10]: https://scikit-learn.org/stable/modules/model_evaluation.html#model-evaluation
 
 
 

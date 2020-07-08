@@ -93,3 +93,12 @@ https://d2l.ai/chapter_linear-networks/linear-regression-concise.html
 
 
 
+## 6. Convolutional Neural Networks
+
+$$
+input:(N,C_{in},H_{in},W_{in})\\
+output:(N,C_{out},H_{out},W_{out})\\
+H_{out}=[\frac{H_{in}+2*padding[0]-dilation[0]*(kernel_size[0]-1)-1}{stride[0]}+1]\\
+W_{out}=[\frac{W_{in}+2*padding[1]-dilation[1]*(kernel_size[1]-1)-1}{stride[1]}+1]
+$$
+
