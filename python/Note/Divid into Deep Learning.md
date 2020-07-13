@@ -75,7 +75,7 @@ fully-connected layer can also called dense layer.
 
 ### 3.2  Concise Implementaion of Linear Regression
 
-我们使用DataLoader加载数据，DataLoader返是一个迭代器类型，通过迭代器类来访问。
+​		我们使用DataLoader加载数据，DataLoader返是一个迭代器类型，通过迭代器类来访问。
 
 ```python
 def load_array(data_arrays, batch_size, is_train=True):  #@save
@@ -89,7 +89,13 @@ data_iter = load_array((features, labels), batch_size)
 print(next(iter(data_iter)))#访问第一个batch的数据，可以用for循环遍历完
 ```
 
-https://d2l.ai/chapter_linear-networks/linear-regression-concise.html
+​		we use a feamework's predefined layers,which **allow us to focus om how to construct the model rather than focus on the implementation.**
+
+​		`Sequential` is a `container` for serveral layers that wil chained together.
+
+ 
+
+​		
 
 
 

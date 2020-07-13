@@ -1,6 +1,6 @@
 
 
-# 机器学习
+# 机器学习与sk-learn
 
 ## 1.L1正则化（Regularization）与L2正则化
 
@@ -703,6 +703,69 @@ print(y_imp2)
 
 
 
+## 9.网格搜索(Grid Search)[^11]
+
+​		网格搜索是一种**调参**手段，使用**穷举**搜索。在所有的候选参数选择中，通过**循环遍历**（for i in []:for j in []:）尝试每一种可能。以调参数**C**和参数**gamma**为例。
+
+<img src="src/gird_search.jpg" alt="gird_search" style="zoom:80%;" />
+
+```python
+best_score = 0
+for gamma in [0.001,0.01,0.1,1,10,100]:
+    for C in [0.001,0.01,0.1,1,10,100]:
+        svm = SVC(gamma=gamma,C=C)#对于每种参数可能的组合，进行一次训练；gamma是SVC核系数，C是SVC正则化参数
+        svm.fit(X_train,y_train)
+        score = svm.score(X_test,y_test)
+        if score > best_score:#找到表现最好的参数
+            best_score = score
+            best_parameters = {'gamma':gamma,'C':C}
+```
+
+​		`sklearn`中使用`GridSearchCV`来实现网格搜索。`CV`指交叉验证，即`Grid Search with Cross Validation`。`cv=None`时默认使用**``cv=5``**,5折交叉验证
+
+```python
+class sklearn.model_selection.GridSearchCV(estimator, param_grid, *, scoring=None, n_jobs=None, iid='deprecated', refit=True, cv=None, verbose=0, pre_dispatch='2*n_jobs', error_score=nan, return_train_score=False)
+```
+
+实现类似于：
+
+**可以使用如下代码在pytorch中实现网格搜索**
+
+```python
+best_score=0
+for gamma in [0.001,0.01,1,10,100]:
+    for C in [0.001,0.01,1,10,100]:
+        svc=SVC(gamma=gamma,C=C)#gamma是核系数，C是正则化参数
+        #5折交叉验证
+        scores=cross_val_score(svc,X_trainval,y_trainval,cv=5) #5-fold交叉验证
+        print(scores)#-->[0.34782609 0.34782609 0.36363636 0.36363636 0.40909091]
+        score=scores.mean()
+        #找到表现最好的参数
+        if score > best_score:
+            best_score=score
+            best_parameters={'gamma':gamma,'C':C}
+print(best_parameters)
+```
+
+使用GridSearchCV:
+
+```python
+# 使用GridSearchCV
+param_grid={'gamma':[i for i in np.arange(0.1,10,0.01)],'C':[i for i in np.arange(0.1,100,1)]}
+grid_search=GridSearchCV(SVC(),param_grid,cv=6,n_jobs=-1)
+grid_reult=grid_search.fit(X_trainval,y_trainval)#运行网格搜索
+print(grid_reult.best_score_)
+print(grid_reult.best_params_)
+```
+
+
+
+
+
+
+
+
+
 ## x. scikit-learn
 
 
@@ -768,6 +831,8 @@ print(accuracy_score(y_test,y_pred))
 
 [^9]:  https://www.zhihu.com/question/20466147 ↩https://zhuanlan.zhihu.com/p/31886934
 [^10]: https://scikit-learn.org/stable/modules/model_evaluation.html#model-evaluation
+
+[^11]: https://www.cnblogs.com/wj-1314/p/10422159.html
 
 
 

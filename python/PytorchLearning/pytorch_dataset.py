@@ -57,12 +57,12 @@ if __name__ == '__main__':
     train_loader = torch.utils.data.DataLoader(
         data_set(img_path, label_path,
                  transforms.Compose([
-                     transforms.Resize((64, 128)),
-                     transforms.RandomCrop((60, 120)),
-                     transforms.ColorJitter(0.3, 0.3, 0.2),
-                     transforms.RandomRotation(5),
-                     transforms.ToTensor(),
-                     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                     transforms.resize((64, 128)),
+                     transforms.randomcrop((60, 120)),
+                     transforms.colorjitter(0.3, 0.3, 0.2),
+                     transforms.randomrotation(5),
+                     transforms.totensor(),
+                     transforms.normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                  ])),
         batch_size=40,
         shuffle=True,
