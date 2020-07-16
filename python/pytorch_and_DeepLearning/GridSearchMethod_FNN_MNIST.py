@@ -13,7 +13,7 @@ DATA_PAHT=r'C:\Users\Administrator\Desktop\dataset\MNIST_IMG'
 # TRAIN_PATH=os.path.join(DATA_PAHT,'TRAIN')
 # TEST_PATH=os.path.join(DATA_PAHT,'TEST')
 # dataset类中定义了is_train,舍弃
-EPOCH=2
+EPOCH=200
 BATCH_SIZE=526
 DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -71,8 +71,8 @@ class DigtData(Dataset):
     def __len__(self):
         return len(self.dataset)
 
-# data=DigtData(path=DATA_PAHT,is_train=True,transform=None)
-# print(data[20000])
+data=DigtData(path=DATA_PAHT,is_train=True,transform=None)
+print(data.__len__())
 
 class LinearNet(nn.Module):
     def __init__(self):
@@ -88,7 +88,7 @@ class LinearNet(nn.Module):
         )
         self.classifier=nn.Sequential(
             nn.Linear(258,10),
-            nn.Softmax(),
+            nn.Softmax(dim=1),
         )
     def forward(self,x):
         out=self.feature_extractor(x)
@@ -96,27 +96,8 @@ class LinearNet(nn.Module):
         return out
 
 
-# 读取数据
-#1.读取训练集的数据
-train_data=torch.utils.data.DataLoader(
-    DigtData(path=DATA_PAHT,is_train=True,
-             transform=transforms.Compose(
-                 [transforms.RandomRotation(5),
-                  transforms.ToTensor()
-                 ])),
-            batch_size=BATCH_SIZE,
-            shuffle=True,
-            num_workers=0)
-#2.读取测试集的数据
-test_data=torch.utils.data.DataLoader(
-    DigtData(path=DATA_PAHT,is_train=True,
-             transform=transforms.Compose(
-                 [
-                  transforms.ToTensor()
-                 ])),
-            batch_size=BATCH_SIZE,
-            shuffle=False,
-            num_workers=0)
+
+
 
 def train(train_loader,model,optimizer,epoch):
     # 切换为训练模式
@@ -142,30 +123,61 @@ def train(train_loader,model,optimizer,epoch):
 def test(test_loader,model):
     # 切换为训练模式
     model.eval()
-    correct=0
-    targets=[]
-    preds=[]
+    correct=0.
+    test_loss_sum=0.
+
 
     with torch.no_grad():
-        for input,target in test_loader:
-            targets.append(target)
+        for i,(input,target) in enumerate(test_loader):
             input,target=input.to(DEVICE),target.to(DEVICE)
             output=model(input)
-            pred=output.max(1,keepdim=True)[1]
-            preds.append(pred)
-        # targets=targets.cpu().numpy()
-        # preds=preds.cpu().numpy()
-        # print(targets)
-        # print(preds)
-        # print(classification_report(targets[0],preds[0]))
-        #TypeError: can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.
+            test_loss=torch.mean((target-output)**2)
+            test_loss_sum+=test_loss.item()
+
+            #将onehot转为标签值
+            pred=torch.argmax(output,dim=1)
+            target=torch.argmax(target,dim=1)
+            correct+=torch.sum(torch.eq(pred,target).float())
+
+        accuarcy=correct/len(test_loader)
+        print("accuarcy:",accuarcy)
+            # pred=torch.argmax(output,dim=1)
 
 
+#
 model=LinearNet().to(DEVICE)
-optim=torch.optim.Adam(model.parameters())
-for epoch in range (1,EPOCH+1):
-    train(train_data,model=model,optimizer=optim,epoch=epoch)
-    test(test_data,model=model)
+
+
+if __name__ =='__main__':
+        # 读取数据
+    #1.读取训练集的数据
+    train_data=torch.utils.data.DataLoader(
+        DigtData(path=DATA_PAHT,is_train=True,
+                 transform=transforms.Compose(
+                     [transforms.RandomRotation(5),
+                      transforms.ToTensor()
+                     ])),
+                batch_size=BATCH_SIZE,
+                shuffle=True,
+                num_workers=0)
+    print(len(train_data))
+    #2.读取测试集的数据
+    test_data=torch.utils.data.DataLoader(
+        DigtData(path=DATA_PAHT,is_train=True,
+                 transform=transforms.Compose(
+                     [
+                      transforms.ToTensor()
+                     ])),
+                batch_size=BATCH_SIZE,
+                shuffle=False,
+                num_workers=0)
+    print(len(test_data))
+
+    model=LinearNet().to(DEVICE)
+    optim=torch.optim.Adam(model.parameters())
+    for epoch in range (1,EPOCH+1):
+        train(train_data,model=model,optimizer=optim,epoch=epoch)
+        test(test_data,model=model)
 
 
 

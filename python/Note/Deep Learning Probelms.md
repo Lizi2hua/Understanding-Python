@@ -97,10 +97,20 @@ $$
 Leaky \ ReLU =max(0.1x,x)
 $$
 
-
 ​	
 
+## 3. Convolutional Neural Networks[^3]
 
+### 3.1 from dense layer to convolutions
+
+​		对于全连接，假设我们有一张100w像素的图片，则意味的网络的每个输入都有100w个维度。我们应该利用这样一个先验信息：相邻的像素是相互关联的（nearby pixels are typically related to each other）。
+
+​		对于想要检测图像中的物体，我们不应该过分关注物体像素在图像中的精确位置。
+
+​		我们可以根据以下条件来设计网络：
+
+1. In the earliest layers, **our network should respond similarly to the same `patch`, regardless of where it appears in the image (translation invariance，平移不变性).**
+2. The earliest layers of the network should  focus on local regions, without regard for the contents of the image in distant regions (locality). Eventually, these local representations can be aggregated to make predictions at the whole image level.**考虑局部，不考虑全部**
 
 
 
@@ -111,4 +121,6 @@ $$
 [^1]: https://zhuanlan.zhihu.com/p/27609238
 
 [^2]: https://www.geogebra.org/3d
+
+[^3]: https://d2l.ai/chapter_convolutional-neural-networks/why-conv.html
 
