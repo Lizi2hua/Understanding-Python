@@ -72,7 +72,8 @@ class DigtData(Dataset):
         return len(self.dataset)
 
 data=DigtData(path=DATA_PAHT,is_train=True,transform=None)
-print(data.__len__())
+# print(data.__len__())
+# exit()
 
 class LinearNet(nn.Module):
     def __init__(self):

@@ -112,7 +112,21 @@ $$
 1. In the earliest layers, **our network should respond similarly to the same `patch`, regardless of where it appears in the image (translation invariance，平移不变性).**
 2. The earliest layers of the network should  focus on local regions, without regard for the contents of the image in distant regions (locality). Eventually, these local representations can be aggregated to make predictions at the whole image level.**考虑局部，不考虑全部**
 
+根据平移不变性，我们有：
+$$
+h[i,j]=u+\sum_{a,b}V[a,b]*x[i+a,j+b]\\
+i,j表示像素坐标，a,b表示在像素上的正负偏移
+$$
+这个公式表明，我们**实际上是对像素[i,j]及其附近[i+a,j+b]范围内的像素用系数$V[a,b]$进行加权。**
 
+根据位置性，我们不应该在离像素[i,j]很远的地方来计算h[i,j]的特征。这意味着，在**某个范围$|a|，|b|>\delta$之外。应该设置$V[a,b]=0。$**
+$$
+h[i,j]=u+\sum_{a=-\delta}^{\delta}\sum_{b=-\delta}^{\delta}
+V[a,b]*x[i+a,j+b]
+$$
+上面公式就是一个卷积层
+
+https://d2l.ai/chapter_convolutional-neural-networks/why-conv.html#invariances
 
 
 
