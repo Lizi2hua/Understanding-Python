@@ -14,7 +14,7 @@ from torch import optim
 # hyper params
 DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
 EPOCH=200
-BATCH_SIZE=526
+BATCH_SIZE=16
 DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -131,9 +131,46 @@ class LinearNet(nn.Module):
         out=self.fc_layers(x)
         return self.classifier(out)
 
+class AlexNet(nn.Module):
+    def __init__(self):
+        super(AlexNet, self).__init__()
+        self.layers=nn.Sequential(
+    nn.Conv2d(3,96,kernel_size=3,stride=1,padding=1),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=2,stride=2),
+    nn.Conv2d(96,256,kernel_size=3,padding=1),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=2,stride=2),
+    nn.Conv2d(256,384,kernel_size=3,padding=1),nn.ReLU(),
+    nn.Conv2d(384,384,kernel_size=3,padding=1),nn.ReLU(),
+    nn.Conv2d(384,384,kernel_size=3,padding=1),nn.ReLU(),
+    nn.Conv2d(384,256,kernel_size=3,padding=1),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=3,stride=2),
+
+    nn.Flatten(),
+    nn.Linear(36864,1024),nn.ReLU(),
+    nn.Dropout(p=0.5),
+    nn.Linear(1024,2)
+)
+    def forward(self,x):
+        out=self.layers(x)
+        return out
+
+class ConvNet(nn.Module):
+    def __init__(self):
+        super(ConvNet, self).__init__()
+        self.layers=nn.Sequential(
+            nn.Conv2d(3,15,kernel_size=4),nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2,stride=1),
+            nn.Conv2d(15,30,kernel_size=3),nn.ReLU(),
+            nn.Linear(-1,2),
+            nn.Softmax(dim=1)
+        )
+    def foward(self,x):
+        return self.layers(x)
+
+
 class Train():
     def __init__(self,root):
-        self.train_data=DataLoader(DogCat(path=root,is_train=True,is_fc=True,transform=
+        self.train_data=DataLoader(DogCat(path=root,is_train=True,is_fc=False,transform=
                                           transforms.Compose([
                                               # transforms.RandomRotation(1),
                                               transforms.RandomHorizontalFlip(),
@@ -143,7 +180,7 @@ class Train():
                                    shuffle=True,
                                    num_workers=0
                                    )
-        self.val_data=DataLoader(DogCat(path=root,is_train=False,is_fc=True,transform=
+        self.val_data=DataLoader(DogCat(path=root,is_train=False,is_fc=False,transform=
                                           transforms.Compose([
                                               # transforms.RandomRotation(1),
                                               # transforms.RandomHorizontalFlip(),
@@ -153,7 +190,7 @@ class Train():
                                    shuffle=True,
                                    num_workers=0
                                    )
-        self.model=LinearNet().to(DEVICE)
+        self.model=AlexNet().to(DEVICE)
         ckpt_path="./ckpt"
         ckpt_file=os.listdir(ckpt_path)
         # print(ckpt_file)

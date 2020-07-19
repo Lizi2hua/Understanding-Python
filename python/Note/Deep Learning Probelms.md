@@ -109,24 +109,154 @@ $$
 
 ​		我们可以根据以下条件来设计网络：
 
-1. In the earliest layers, **our network should respond similarly to the same `patch`, regardless of where it appears in the image (translation invariance，平移不变性).**
+1. In the earliest layers, **our network should respond similarly to the same `patch`, regardless of where it appears in the image (translation invariance，平移不变性). **参数共享
 2. The earliest layers of the network should  focus on local regions, without regard for the contents of the image in distant regions (locality). Eventually, these local representations can be aggregated to make predictions at the whole image level.**考虑局部，不考虑全部**
 
 根据平移不变性，我们有：
 $$
-h[i,j]=u+\sum_{a,b}V[a,b]*x[i+a,j+b]\\
+h[i,j]=\sum_{a,b}V[a,b]*x[i+a,j+b]\\
 i,j表示像素坐标，a,b表示在像素上的正负偏移
 $$
 这个公式表明，我们**实际上是对像素[i,j]及其附近[i+a,j+b]范围内的像素用系数$V[a,b]$进行加权。**
 
 根据位置性，我们不应该在离像素[i,j]很远的地方来计算h[i,j]的特征。这意味着，在**某个范围$|a|，|b|>\delta$之外。应该设置$V[a,b]=0。$**
 $$
-h[i,j]=u+\sum_{a=-\delta}^{\delta}\sum_{b=-\delta}^{\delta}
+h[i,j]=\sum_{a=-\delta}^{\delta}\sum_{b=-\delta}^{\delta}
 V[a,b]*x[i+a,j+b]
 $$
-上面公式就是一个卷积层
+上面公式就是一个卷积层。
 
-https://d2l.ai/chapter_convolutional-neural-networks/why-conv.html#invariances
+对于三维图像，像素值可以由$x[i,j,k],k表示通道$唯一确定，所以，上面的公式可以改成
+$$
+h[i,j,k]=\sum_{a=-\delta}^{\delta}\sum_{b=-\delta}^{\delta}\sum_{c}V[a,b,c,k]*x[i+a,j+b,c]\\
+c为卷积核输入通道，k为输出的通道（卷积核的个数）
+$$
+不同的通道可以学习到不同的局部特征，比如有的识别边缘，有的识别纹理。
+
+2维卷积的实现:
+
+
+
+```python
+def CONV2d(X,K):
+    """:param K为卷积核，X为输入
+    """
+    h,w=K.shape
+    Y=torch.zeros((X.shape[0]-h+1,X.shape[1]-w+1)) #卷积核输出维度的计算公式
+    for i in range(Y.shape[0]):
+        for j in range(Y.shape[1]):
+            Y[i,j]=torch.sum(X[i:i+h,j:j+h]*K)
+            #从左往右，从上往下的顺序在数组上滑动。
+    return Y
+```
+
+二维卷积层将**输入和卷积核做互相关运算**，并加上一个**标量偏差**来得到输出。在卷积网络中，我们通常**先对卷积核随机初始化，然后通过迭代更新卷积核和偏差。**
+
+可以通过torch框架定义：
+
+```python
+class conv2d(nn.Module):
+    def __inint__(self,kernel_size):
+        super(conv2d,self).__init__()
+        self.weight=nn.Parameter(torch.rand(kernel_size))
+        self.bias=nn.Parameter(torch.zeros(1))
+        #nn.Parameter是Tensor的子类
+        
+     def forward(self,x)
+    	return CONV2D(x,self.weight)+self.bias
+        
+```
+
+卷积核的参数学习
+
+```python
+# Construct a convolutional layer with 1 input channel and 1 output channel
+# (channels will be introduced in the following section)
+# and a kernel array shape of (1, 2). For sake of simplicity we ignore bias
+conv2d = nn.Conv2d(1,1, kernel_size=(1, 2), bias=False)
+
+#二维卷积的输入和输出是(N,C,H,W)格式
+X = X.reshape((1, 1, 6, 8))
+Y = Y.reshape((1, 1, 6, 7))
+
+for i in range(10):
+    Y_hat = conv2d(X)
+    l = (Y_hat - Y) ** 2 #损失函数
+    conv2d.zero_grad()
+    l.sum().backward() #损失BP
+    conv2d.weight.data[:] -= 3e-2 * conv2d.weight.grad #梯度下降更新
+    if (i + 1) % 2 == 0:
+        print(f'batch {i+1}, loss {l.sum():.3f}')
+```
+
+### 3.2 1*1 Convolution Layers
+
+​		1x1卷积运算**主要在通道变换上**，宽和高基本无变化。如下图，输入3x3x3的矩阵，卷积核为1x1x3个数为2，输出为3x3x2。，**输出元素维不同通道相同位置像素值按权重累加**。假设我们将通道维当作特征维（**从通道的方向看，下下图**），将高和宽维度上的元素当成数据样本(D个样本，W*H个batch？)，那么1×1卷积层的作用与全连接层等价。即下图中浅蓝色的三个通道相连了。如果用全连接类比的话，一个卷积核相当于一个节点。
+
+<img src="src/1x1Conv.jpg" alt="1x1Conv" style="zoom:70%;" />
+
+<img src="src/1x1Conv2.jpg" alt="1x1Conv2" style="zoom:70%;" />
+
+1x1卷积可以用来**1.调整网络层之间的通道数来控制模型复杂度。**
+
+​								 **2. 实现跨通道的交互和信息的整合**
+
+​		**网络中的网络(NiN)**
+
+
+
+
+
+https://zh.gluon.ai/chapter_convolutional-neural-networks/nin.html
+
+https://d2l.ai/chapter_convolutional-modern/nin.html
+
+### 3.3 Receptive Field （感受场）
+
+​		在卷积神经网络中，**每个卷积网络从上一层的一些位置（和卷积核大小相关）接受输入**，全连接中，每个神经元接受前一层的**每个元素输入**。神经元输入区域称为感受场，在全连接中，感受场就是前一层网络，在卷积网络中，感受场比前一层小。
+
+
+
+### 3.4 Pooling 层
+
+​		**池化层的提出是为了缓解卷积层对位置的过度敏感性**
+
+​		实际图像里，我们感兴趣的物体不会总出现在固定位置：即使我们连续拍摄同一个物体也极有可能出现像素位置上的偏移。这会导致同一个边缘对应的输出可能出现在卷积输出`Y`中的不同位置，进而对后面的模式识别造成不便。
+
+我的理解：不同对象的像素值总是与其他对象相差较远（相关性小），使用池化可以去除不属于同一个对象的像素值。
+
+### 3.5 Modern Convolutional Neural Network
+
+#### 3.5.1 AlexNet
+
+​		AlexNet使用了8层卷积神经网络，**首次证明了*学习到的特征可以超越手工设计的特征***。
+
+```python
+net=nn.Sequential(
+    nn.Conv2d(1,96,kernel_size=11,stride=4,padding=1),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=3,stride=2),
+    nn.Conv2d(96,256,kernel_size=5,padding=2),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=3,stride=2),
+    nn.Conv2d(256,384,kernel_size=3,padding=1),nn.ReLU(),
+    nn.Conv2d(384,384,kernel_size=3,padding=1),nn.ReLU(),
+    nn.Conv2d(384,384,kernel_size=3,padding=1),nn.ReLU(),
+    nn.Conv2d(384,256,kernel_size=3,padding=1),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=3,stride=2),
+
+    nn.Flatten(),
+    nn.Linear(6400,4096),nn.ReLU(),
+    nn.Dropout(p=0.5),
+    nn.Linear(4096,10)
+)
+
+X=torch.randn(1,1,224,224)
+for layer in net:
+    X=layer(X)
+    print(layer.__class__.__name__,"output shape:\t",X.shape)
+
+```
+
+
 
 
 
