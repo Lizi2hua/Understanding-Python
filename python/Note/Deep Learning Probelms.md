@@ -133,9 +133,7 @@ c为卷积核输入通道，k为输出的通道（卷积核的个数）
 $$
 不同的通道可以学习到不同的局部特征，比如有的识别边缘，有的识别纹理。
 
-2维卷积的实现:
-
-
+**`2维卷积的实现:`**
 
 ```python
 def CONV2d(X,K):
@@ -145,7 +143,7 @@ def CONV2d(X,K):
     Y=torch.zeros((X.shape[0]-h+1,X.shape[1]-w+1)) #卷积核输出维度的计算公式
     for i in range(Y.shape[0]):
         for j in range(Y.shape[1]):
-            Y[i,j]=torch.sum(X[i:i+h,j:j+h]*K)
+            Y[i,j]=torch.sum(X[i:i+h,j:j+h]*K)#广播机制
             #从左往右，从上往下的顺序在数组上滑动。
     return Y
 ```
@@ -255,6 +253,12 @@ for layer in net:
     print(layer.__class__.__name__,"output shape:\t",X.shape)
 
 ```
+
+
+
+### 3.5  不同卷积核大小对运算时间的影响
+
+![ksize_and_costtime](src/ksize_and_costtime.png)
 
 
 

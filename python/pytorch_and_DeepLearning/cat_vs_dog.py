@@ -13,8 +13,8 @@ from torch import optim
 
 # hyper params
 DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
-EPOCH=200
-BATCH_SIZE=16
+EPOCH=500
+BATCH_SIZE=512
 DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -119,11 +119,13 @@ class LinearNet(nn.Module):
     def __init__(self):
         super(LinearNet, self).__init__()
         self.fc_layers=nn.Sequential(
-                nn.Linear(30000,1024),
+                nn.Linear(30000,2048),
                 nn.ReLU(),
-                nn.Linear(1024,512),
+                nn.Linear(2048,512),
                 nn.ReLU(),
-                nn.Linear(512,2)
+                nn.Linear(512,256),
+                nn.ReLU(),
+                nn.Linear(256,2)
             )
         self.classifier=nn.Softmax(dim=1)
 
@@ -147,8 +149,10 @@ class AlexNet(nn.Module):
 
     nn.Flatten(),
     nn.Linear(36864,1024),nn.ReLU(),
+    # nn.Linear(40000,512),nn.ReLU(),
     nn.Dropout(p=0.5),
-    nn.Linear(1024,2)
+    nn.Linear(1024,2),
+    # nn.Softmax(dim=1)
 )
     def forward(self,x):
         out=self.layers(x)
@@ -158,21 +162,28 @@ class ConvNet(nn.Module):
     def __init__(self):
         super(ConvNet, self).__init__()
         self.layers=nn.Sequential(
-            nn.Conv2d(3,15,kernel_size=4),nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2,stride=1),
-            nn.Conv2d(15,30,kernel_size=3),nn.ReLU(),
-            nn.Linear(-1,2),
-            nn.Softmax(dim=1)
-        )
-    def foward(self,x):
-        return self.layers(x)
+    nn.Conv2d(3,96,kernel_size=3,stride=1,padding=1),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=2,stride=2),
+    nn.Conv2d(96,128,kernel_size=3,padding=1),nn.ReLU(),
+    nn.MaxPool2d(kernel_size=2,stride=2),
+    nn.Conv2d(128,64,kernel_size=3,padding=1),nn.ReLU(),
+
+    nn.Flatten(),
+    nn.Linear(40000,512),nn.ReLU(),
+    nn.Dropout(p=0.5),
+    nn.Linear(512,2),
+    nn.Softmax(dim=1))
+
+    def forward(self,x):
+        out=self.layers(x)
+        return out
 
 
 class Train():
     def __init__(self,root):
-        self.train_data=DataLoader(DogCat(path=root,is_train=True,is_fc=False,transform=
+        self.train_data=DataLoader(DogCat(path=root,is_train=True,is_fc=True,transform=
                                           transforms.Compose([
-                                              # transforms.RandomRotation(1),
+                                              transforms.RandomRotation(1),
                                               transforms.RandomHorizontalFlip(),
                                               transforms.ToTensor()
                                           ])),
@@ -180,9 +191,11 @@ class Train():
                                    shuffle=True,
                                    num_workers=0
                                    )
-        self.val_data=DataLoader(DogCat(path=root,is_train=False,is_fc=False,transform=
+        self.val_data=DataLoader(DogCat(path=root,is_train=False,is_fc=True,transform=
                                           transforms.Compose([
                                               # transforms.RandomRotation(1),
+
+
                                               # transforms.RandomHorizontalFlip(),
                                               transforms.ToTensor()
                                           ])),
@@ -190,7 +203,7 @@ class Train():
                                    shuffle=True,
                                    num_workers=0
                                    )
-        self.model=AlexNet().to(DEVICE)
+        self.model=LinearNet().to(DEVICE)
         ckpt_path="./ckpt"
         ckpt_file=os.listdir(ckpt_path)
         # print(ckpt_file)
@@ -199,7 +212,7 @@ class Train():
             ckpt_file=os.path.join(ckpt_path,ckpt_file[-1])
             self.model.load_state_dict(torch.load(ckpt_file))
         # self.model.load_state_dict(torch.load(r".\ckpt\.{}t"))
-        self.opt=optim.Adam(self.model.parameters())
+        self.opt=optim.Adam(self.model.parameters(),lr=0.01)
         self.summary=SummaryWriter('./logs')
 
     def __call__(self):
@@ -211,7 +224,7 @@ class Train():
                 input,target=input.to(DEVICE),target.to(DEVICE)
                 y=self.model(input)
 
-                loss=F.mse_loss(y,target)
+                loss=F.smooth_l1_loss(y,target)
 
                 self.opt.zero_grad()
                 loss.backward()
@@ -224,6 +237,7 @@ class Train():
             print('epoch:',epoch,"\tLoss:",avg_loss,"耗时",end_time-start_time)
 
             with torch.no_grad():
+                self.model.eval()
                 correct=0
                 start_time=time.time()
                 loss_sum_val=0.
@@ -232,7 +246,7 @@ class Train():
                     input,target=input.to(DEVICE),target.to(DEVICE)
                     y=self.model(input)
 
-                    loss_val=F.mse_loss(y,target)
+                    loss_val=F.smooth_l1_loss(y,target)
                     loss_sum_val+=loss_val.detach().item()
 
                     pred=torch.argmax(y,dim=1)
