@@ -11,10 +11,13 @@ from torch import optim
 
 
 
+
 # hyper params
-DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
+# DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
+DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
 EPOCH=500
-BATCH_SIZE=512
+
+BATCH_SIZE=64
 DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -161,27 +164,30 @@ class AlexNet(nn.Module):
 class ConvNet(nn.Module):
     def __init__(self):
         super(ConvNet, self).__init__()
-        self.layers=nn.Sequential(
-    nn.Conv2d(3,96,kernel_size=3,stride=1,padding=1),nn.ReLU(),
-    nn.MaxPool2d(kernel_size=2,stride=2),
-    nn.Conv2d(96,128,kernel_size=3,padding=1),nn.ReLU(),
-    nn.MaxPool2d(kernel_size=2,stride=2),
-    nn.Conv2d(128,64,kernel_size=3,padding=1),nn.ReLU(),
+        self.conv=nn.Sequential(
+            nn.Conv2d(3,96,kernel_size=3,stride=1,padding=1),nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2,stride=2),
+            nn.Conv2d(96,128,kernel_size=3,padding=1),nn.ReLU(),
+            # nn.MaxPool2d(kernel_size=2,stride=2),
+            nn.Conv2d(128,64,kernel_size=3,padding=1),nn.ReLU(),)
 
-    nn.Flatten(),
-    nn.Linear(40000,512),nn.ReLU(),
-    nn.Dropout(p=0.5),
-    nn.Linear(512,2),
-    nn.Softmax(dim=1))
+        self.fc=nn.Sequential(
+            nn.Linear(64*50*50,512),nn.ReLU(),
+            # nn.Dropout(p=0.5),
+            nn.Linear(512,2),
+            nn.Softmax(dim=1))
 
     def forward(self,x):
-        out=self.layers(x)
+        out=self.conv(x)
+        # print(out.shape)
+        out=out.reshape(-1,64*50*50)
+        out=self.fc(out)
         return out
 
 
 class Train():
     def __init__(self,root):
-        self.train_data=DataLoader(DogCat(path=root,is_train=True,is_fc=True,transform=
+        self.train_data=DataLoader(DogCat(path=root,is_train=True,is_fc=False,transform=
                                           transforms.Compose([
                                               transforms.RandomRotation(1),
                                               transforms.RandomHorizontalFlip(),
@@ -191,11 +197,9 @@ class Train():
                                    shuffle=True,
                                    num_workers=0
                                    )
-        self.val_data=DataLoader(DogCat(path=root,is_train=False,is_fc=True,transform=
+        self.val_data=DataLoader(DogCat(path=root,is_train=False,is_fc=False,transform=
                                           transforms.Compose([
                                               # transforms.RandomRotation(1),
-
-
                                               # transforms.RandomHorizontalFlip(),
                                               transforms.ToTensor()
                                           ])),
@@ -203,7 +207,8 @@ class Train():
                                    shuffle=True,
                                    num_workers=0
                                    )
-        self.model=LinearNet().to(DEVICE)
+        # self.model=LinearNet().to(DEVICE)
+        self.model = ConvNet().to(DEVICE)
         ckpt_path="./ckpt"
         ckpt_file=os.listdir(ckpt_path)
         # print(ckpt_file)
@@ -217,14 +222,19 @@ class Train():
 
     def __call__(self):
         for epoch in range(EPOCH):
-            self.model.train()
+            # self.model.train()
             loss_sum=0.
             start_time=time.time()
             for i,(input,target) in enumerate(self.train_data):
                 input,target=input.to(DEVICE),target.to(DEVICE)
                 y=self.model(input)
+                # print('output',y)
+                # print(y.shape)
+                # print('targe:',target)
+                # print(target.shape)
+                # exit()
 
-                loss=F.smooth_l1_loss(y,target)
+                loss=F.mse_loss(y,target)
 
                 self.opt.zero_grad()
                 loss.backward()
@@ -236,32 +246,40 @@ class Train():
             end_time=time.time()
             print('epoch:',epoch,"\tLoss:",avg_loss,"耗时",end_time-start_time)
 
-            with torch.no_grad():
-                self.model.eval()
-                correct=0
-                start_time=time.time()
-                loss_sum_val=0.
+        # with torch.no_grad():
+        #     self.model.eval()
+            correct=0
+            start_time=time.time()
+            loss_sum_val=0.
 
-                for i,(input,target) in enumerate(self.val_data):
-                    input,target=input.to(DEVICE),target.to(DEVICE)
-                    y=self.model(input)
+            for i,(input,target) in enumerate(self.val_data):
+                input,target=input.to(DEVICE),target.to(DEVICE)
+                y=self.model(input)
+                print('output:',y.shape)
+                print('label:',target.shape)
 
-                    loss_val=F.smooth_l1_loss(y,target)
-                    loss_sum_val+=loss_val.detach().item()
 
-                    pred=torch.argmax(y,dim=1)
-                    gt=torch.argmax(target,dim=1)
-                    correct+=torch.sum(torch.eq(pred,gt).float())
-                val_avg_loss=loss_sum_val/len(self.val_data)
-                accuracy=correct/(len(self.val_data)*BATCH_SIZE)
-                accuracy=accuracy.item()
-                end_time=time.time()
-                print("epoch:", epoch, "\tValidate LOSS:", val_avg_loss, "耗时", end_time - start_time, 'accuary:',
-                      accuracy)
+                loss_val=F.mse_loss(y,target)
+                loss_sum_val+=loss_val.detach().item()
 
-                torch.save(self.model.state_dict(),f'./ckpt/{epoch}.t')
-                self.summary.add_scalar('accuracy',accuracy,epoch)
-                self.summary.add_scalars('loss',{'train_loss':avg_loss,'val_loss':val_avg_loss},epoch)
+                pred=torch.argmax(y,dim=0)
+                print(pred)
+                print(pred.shape)
+                gt=torch.argmax(target,dim=0)
+                print(gt)
+                print(gt.shape)
+                exit()
+                correct+=torch.sum(torch.eq(y,gt).float())
+            val_avg_loss=loss_sum_val/len(self.val_data)
+            accuracy=correct/(len(self.val_data)*BATCH_SIZE)
+            accuracy=accuracy.item()
+            end_time=time.time()
+            print("epoch:", epoch, "\tValidate LOSS:", val_avg_loss, "耗时", end_time - start_time, 'accuary:',
+                  accuracy)
+
+            torch.save(self.model.state_dict(),f'./ckpt/{epoch}.t')
+            self.summary.add_scalar('accuracy',accuracy,epoch)
+            self.summary.add_scalars('loss',{'train_loss':avg_loss,'val_loss':val_avg_loss},epoch)
 
 if __name__ =="__main__":
         train=Train(DATAPATH)
