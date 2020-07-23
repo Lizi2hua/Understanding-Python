@@ -4,14 +4,8 @@ from PIL import Image
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from torchvision import transforms
-
-
-
-
-
-DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
-# DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
-
+# DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
+DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
 # 划分数据集
 # 图片数据的路径
 def ImgLabelGen(root):
@@ -89,6 +83,6 @@ class DogCat(Dataset):
     def __len__(self):
         return len(self.img_path)
 
-data=DogCat(DATAPATH,is_train=True)
-print(data.__len__())
-print(data[500])
+# data=DogCat(DATAPATH,is_train=True)
+# print(data.__len__())
+# print(data[500])
