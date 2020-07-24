@@ -17,6 +17,7 @@ class ConvNet(nn.Module):
             nn.ReLU(),)
         self.fc_layers=nn.Sequential(
             nn.Linear(128*20*20,2),
+            nn.Dropout(0.5),
             nn.Softmax(dim=1)
         )
 

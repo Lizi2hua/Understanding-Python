@@ -11,8 +11,8 @@ from sklearn.model_selection import train_test_split
 from torch.utils.tensorboard import SummaryWriter
 from torch import optim
 
-# DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
-DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
+DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
+# DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
 EPOCH=500
 BATCH_SIZE=64
 DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -20,12 +20,15 @@ DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class Train():
     def __init__(self,root):
-        self.train_data=DataLoader(DogCat(path=root,is_train=True,),
+        self.train_data=DataLoader(DogCat(path=root,is_train=True,transforms=transforms.Compose(
+            [transforms.RandomRotation(10),
+             transforms.ToTensor()]
+        )),
                                    batch_size=BATCH_SIZE,
                                    shuffle=True,
                                    num_workers=0
                                    )
-        self.val_data=DataLoader(DogCat(path=root,is_train=False),
+        self.val_data=DataLoader(DogCat(path=root,is_train=False,transforms=transforms.ToTensor()),
                                    batch_size=BATCH_SIZE,
                                    shuffle=True,
                                    num_workers=0
@@ -33,11 +36,13 @@ class Train():
 
         self.model=ConvNet().to(DEVICE)
         self.opt=optim.Adam(self.model.parameters())
+        self.summary=SummaryWriter('./logs')
         # 保存模型
 
 
     def __call__(self):
         print("training start!")
+        self.model.train()
         for epoch in range(EPOCH):
             loss_sum=0.
             for i ,(input,target) in enumerate(self.train_data):
@@ -64,6 +69,7 @@ class Train():
 
             correct=0.
             loss_sum_val=0.
+            self.model.eval()
             for i,(input,target) in enumerate(self.val_data):
                 input,target=input.to(DEVICE),target.to(DEVICE)
                 output=self.model(input)
@@ -81,7 +87,8 @@ class Train():
             accuarcy=correct/(len(self.val_data)*BATCH_SIZE)
             accuarcy=accuarcy.item()
             print("\033[1;45m Train Epoch:{}\tavg_val_Loss:{:.6f},correct:{}/{},accuarcy:{} \33[0m".format(epoch, val_avg_loss,correct,len(self.val_data)*BATCH_SIZE,accuarcy))
-
+            self.summary.add_scalar('accuarcy',accuarcy,epoch)
+            self.summary.add_scalars('loss',{'train_loss':avg_loss,'val_loss':val_avg_loss},epoch)
 
 if __name__ == '__main__':
     train = Train(DATAPATH)

@@ -4,8 +4,8 @@ from PIL import Image
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from torchvision import transforms
-# DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
-DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
+DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
+# DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
 # 划分数据集
 # 图片数据的路径
 def ImgLabelGen(root):
@@ -56,24 +56,41 @@ def spilted_dataset(root):
 # exit()
 
 class DogCat(Dataset):
-    def __init__(self,path,is_train):
+    def __init__(self,path,is_train,transforms=None):
         """
         :param path: 数据的绝对路径
         :param is_train: 根据is_train的bool值打开测试集和训练集
         :param transform: 在读取图像时进行图像变换tochvision.transform
         :param is_fc: 如果是全连接网络，需要将数据转成NV结构
         """
-        if is_train:
-            self.img_path,self.labels,xxx,xxxx=spilted_dataset(root=path)
+        self.train_img_path,self.train_labels,self.val_img_path,self.val_labels=spilted_dataset(root=path)
+
+        if transforms is not None:
+            self.transforms=transforms
         else:
-            xxx,xxxx,self.img_path,self.labels=spilted_dataset(root=path)
+            self.transforms=None
+        if is_train == True:
+            self.train=True
+        else:
+            self.train=False
+        self.path=path
 
 
     def __getitem__(self, idx):
+        if self.train:
+            self.img_path,self.labels=self.train_img_path,self.train_labels
+        else:
+            self.img_path,self.labels=self.val_img_path,self.val_labels
+
         img=self.img_path[idx]
         label=self.labels[idx]
         img=Image.open(img)
-        img=transforms.ToTensor()(img)
+        if self.transforms is not None:
+            img=self.transforms(img)
+        # img=np.array(img)
+        # img=transforms.RandomRotation(20)
+        # img=transforms.ToTensor()(img)
+
         #onehot
         onehot=torch.zeros(2)
         onehot[int(label)]=1
@@ -81,8 +98,22 @@ class DogCat(Dataset):
         return img,onehot
 
     def __len__(self):
-        return len(self.img_path)
+        if self.train:
+            return len(self.train_img_path)
+        else:
+            return len(self.val_img_path)
 
 # data=DogCat(DATAPATH,is_train=True)
 # print(data.__len__())
 # print(data[500])
+
+#验证是否有相同得数据
+# train_data,train_label,val_data,val_label=spilted_dataset(DATAPATH)
+#
+# same=0
+# for i in train_data:
+#     for j in val_data:
+#         if i==j:
+#             same+=1
+# print('相同的个数',same)
+

@@ -23,5 +23,31 @@ import matplotlib.pyplot as plt
 # plt.plot([k for k in range(1,200,1)],sum_time)
 # plt.show()
 
-a=torch.tensor([[0.6,0.4],[0.3,0.7]])
-print(torch.argmax(a,dim=1))
+# a=torch.randn([64,3,100,100])
+# net=nn.Sequential(
+#     nn.Conv2d(3,64,3),
+#     nn.Flatten(),
+#     nn.Linear(64*98*98,10)
+# )
+# b=net(a)
+# print(b.shape)
+# print(next(iter(net.modules())))
+y=[i for i in range(10)]
+train_loss=[i for i in range(0,10,1)]
+val_loss=[i for i in range(0,20,2)]
+ac=[i for i in range(0,100,10)]
+
+plt.subplot(121)
+plt.xlabel("epoch")
+plt.ylabel('loss')
+plt.title('the loss change with epcoh')
+plt.plot(y,train_loss,c='r',label="train loss")
+plt.plot(y,val_loss,c='g',label='val loss')
+plt.legend()
+plt.subplot(122)
+plt.xlabel('epoch')
+plt.ylabel('accuarcy')
+plt.title('the accuarcy with epoch')
+plt.plot(y,ac,c='b',label='accuarcy')
+plt.legend()
+plt.show()
