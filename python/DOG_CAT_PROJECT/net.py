@@ -2,14 +2,14 @@ import torch
 import torch.nn as nn
 
 class ConvNet(nn.Module):
-    def __init__(self):
+    def __init__(self,layer1_filter):
         super(ConvNet, self).__init__()
         self.conv_layers=nn.Sequential(
-            nn.Conv2d(3,32,3),
+            nn.Conv2d(3,layer1_filter,3),
             nn.MaxPool2d(3,2),
             nn.ReLU(),
 
-            nn.Conv2d(32,64,3),
+            nn.Conv2d(layer1_filter,64,3),
             nn.MaxPool2d(3,2),
             nn.ReLU(),
 
@@ -30,6 +30,9 @@ class ConvNet(nn.Module):
         return out
 
 # x=torch.randn([64,3,100,100])
-# net=ConvNet()
-# y=net(x)
-# print(y)
+# for i in range(32,256,2):
+#     net=ConvNet(layer1_filter=i)
+#     y=net(x)
+#     print(y)
+# net=ConvNet(layer1_filter=32)
+# print(net)

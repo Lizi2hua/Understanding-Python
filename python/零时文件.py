@@ -37,17 +37,29 @@ train_loss=[i for i in range(0,10,1)]
 val_loss=[i for i in range(0,20,2)]
 ac=[i for i in range(0,100,10)]
 
-plt.subplot(121)
-plt.xlabel("epoch")
-plt.ylabel('loss')
-plt.title('the loss change with epcoh')
-plt.plot(y,train_loss,c='r',label="train loss")
-plt.plot(y,val_loss,c='g',label='val loss')
-plt.legend()
-plt.subplot(122)
-plt.xlabel('epoch')
-plt.ylabel('accuarcy')
-plt.title('the accuarcy with epoch')
-plt.plot(y,ac,c='b',label='accuarcy')
-plt.legend()
+# plt.subplot(121)
+# plt.xlabel("epoch")
+# plt.ylabel('loss')
+# plt.title('the loss change with epcoh')
+# plt.plot(y,train_loss,c='r',label="train loss")
+# plt.plot(y,val_loss,c='g',label='val loss')
+# plt.legend()
+# plt.subplot(122)
+# plt.xlabel('epoch')
+# plt.ylabel('accuarcy')
+# plt.title('the accuarcy with epoch')
+# plt.plot(y,ac,c='b',label='accuarcy')
+# plt.legend()
+# plt.show()
+
+acc_all=[]
+i=0
+start_time=time.time()
+for num in range(192,256,8):
+    max_acc=torch.rand(1)
+    acc_all.append(max_acc)
+    i+=1
+x_axis=[j for j in range(i)]
+plt.title("max acc with differen kernels")
+plt.plot(x_axis,acc_all)
 plt.show()

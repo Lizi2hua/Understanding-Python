@@ -227,7 +227,7 @@ https://d2l.ai/chapter_convolutional-modern/nin.html
 
 #### 3.5.1 AlexNet
 
-​		AlexNet使用了8层卷积神经网络，**首次证明了*学习到的特征可以超越手工设计的特征***。
+​		AlexNet使用了8层卷积神经网络（5个卷积层，3个全连接层），**首次证明了*学习到的特征可以超越手工设计的特征***。
 
 ```python
 net=nn.Sequential(
@@ -253,6 +253,18 @@ for layer in net:
     print(layer.__class__.__name__,"output shape:\t",X.shape)
 
 ```
+
+`AlexNet`首次在CNN中运用了，`ReLU`,`Dropout`,`多GPU同时计算`等现在常用的trick。除了将图片从中心裁剪成统一大小和将图像中的每个像素值除以均值外没做其他任何预处理。
+
+**ImageNet是一个拥有超过1500万个已标记高分辨率图像的数据集，大约有22000个类别。**
+
+
+
+#### 3.5.2 VGG
+
+​		在同样的stride下， 不同的卷积核大小的特征图和卷积**参数量**相差不大；
+
+​		越大的聚集和**计算量**越大。
 
 
 

@@ -13,13 +13,13 @@ from torch import optim
 
 DATAPATH=r"C:\Users\Administrator\Desktop\dataset\cat_dog"
 # DATAPATH=r"C:\Users\李梓桦\Desktop\pei_xun\dataset\cat_dog"
-EPOCH=500
+EPOCH=2
 BATCH_SIZE=64
 DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class Train():
-    def __init__(self,root):
+    def __init__(self,root,filter_nums):
         self.train_data=DataLoader(DogCat(path=root,is_train=True,transforms=transforms.Compose(
             [transforms.RandomRotation(10),
              transforms.ToTensor()]
@@ -34,7 +34,7 @@ class Train():
                                    num_workers=0
                                    )
 
-        self.model=ConvNet().to(DEVICE)
+        self.model=ConvNet(layer1_filter=filter_nums).to(DEVICE)
         self.opt=optim.Adam(self.model.parameters())
         self.summary=SummaryWriter('./logs')
         # 保存模型
@@ -91,5 +91,6 @@ class Train():
             self.summary.add_scalars('loss',{'train_loss':avg_loss,'val_loss':val_avg_loss},epoch)
 
 if __name__ == '__main__':
-    train = Train(DATAPATH)
-    train()
+    for i in range(8,256,2):
+        train = Train(DATAPATH,filter_nums=i)
+        train()

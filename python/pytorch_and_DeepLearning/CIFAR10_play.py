@@ -1,4 +1,4 @@
-import torch,torchvision
+import torch,torchvision,time
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset,DataLoader
@@ -8,26 +8,25 @@ import matplotlib.pyplot as plt
 from torch import optim
 
 BATCH_SIZE=128
-EPOCH=20
+EPOCH=50
 DEVICE=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 root=r'C:\Users\Administrator\Desktop\dataset\CIFAR10'
 
 
 class ConvNet(nn.Module):
-    def __init__(self):
+    def __init__(self,layer1_filter):
         super(ConvNet, self).__init__()
         self.features=nn.Sequential(
-            nn.Conv2d(3,64,3,padding=2),
+            nn.Conv2d(3,layer1_filter,3,padding=2),
             nn.ReLU(),
             nn.MaxPool2d(3,2),
 
-            nn.Conv2d(64,192,3,padding=2),
+            nn.Conv2d(layer1_filter,384,3,padding=2),
             nn.ReLU(),
             nn.MaxPool2d(3,2),
 
-            nn.Conv2d(192,384,3),
+            nn.Conv2d(384,384,3),
             nn.ReLU(),
-
             nn.Conv2d(384,256,3),
             nn.ReLU(),
 
@@ -43,10 +42,6 @@ class ConvNet(nn.Module):
             nn.Dropout(),
             nn.Softmax(dim=1),
         )
-
-
-
-
     def forward(self,x):
         out=self.features(x)
         # print(out.shape)
@@ -56,35 +51,34 @@ class ConvNet(nn.Module):
 
 
 class Train():
-    def __init__(self,root):
-        self.train_data=DataLoader(datasets.CIFAR10(root=root,train=True,download=False,transform=transforms.Compose(
+    def __init__(self,root,filter_nums):
+        self.train_data=DataLoader(datasets.CIFAR10(root=root,train=True,download=True,transform=transforms.Compose(
             [
                 transforms.RandomRotation(10),
                 transforms.RandomVerticalFlip(p=0.1),
-                transforms.RandomHorizontalFlip(),
-                transforms.ColorJitter(),
+                transforms.RandomHorizontalFlip(p=0.3),
+                transforms.ColorJitter(0.1,0.1,0.1,[-0.5,0.2]),
                 transforms.ToTensor()
             ])),
             batch_size=BATCH_SIZE,
             shuffle=True,
-            num_workers=0)
-        self.val_data=DataLoader(datasets.CIFAR10(root=root,train=False,download=False,transform=transforms.Compose(
+            num_workers=10)
+        self.val_data=DataLoader(datasets.CIFAR10(root=root,train=False,download=True,transform=transforms.Compose(
             [
-                # transforms.RandomRotation(10),
-                # transforms.RandomVerticalFlip(),
                 transforms.ToTensor()
             ])),
             batch_size=BATCH_SIZE,
             shuffle=True,
-            num_workers=0)
-
-        self.model=ConvNet().to(DEVICE)
+            num_workers=10)
+        self.filter_nums=filter_nums
+        self.model=ConvNet(layer1_filter=filter_nums).to(DEVICE)
         self.opt=optim.Adam(self.model.parameters())
 
     def __call__(self):
         train_loss=[]
         val_loss=[]
         ac=[]
+        max_acc=0.
         print("training start!")
         self.model.train()
         for epoch in range(EPOCH):
@@ -109,11 +103,12 @@ class Train():
                     self.opt.step()
 
                     loss_sum+=loss.detach().item() #一个batch的loss
-                    if i % 100==0:
-                        print("Epoch {},batch {},loss:{:.6f}".format(epoch,i,loss.detach().item()))
+                    # if i % 100==0:
+                    #     print("Epoch {},batch {},loss:{:.6f}".format(epoch,i,loss.detach().item()))
                 avg_loss=loss_sum/len(self.train_data)  #train_data的长度是batch,dataset的长度是整个数据集的长度
                 train_loss.append(avg_loss)
-                print("\033[1;45m Train Epoch:{}\tavg_Loss:{:.6f} \33[0m".format(epoch,avg_loss))
+                if epoch%10==0:
+                  print("\033[1;45m Train Epoch:{}\tavg_Loss:{:.6f} \33[0m".format(epoch,avg_loss))
 
                 correct=0.
                 loss_sum_val=0.
@@ -136,29 +131,51 @@ class Train():
                 val_avg_loss=loss_sum_val/len(self.val_data)
                 accuarcy=correct/(len(self.val_data)*BATCH_SIZE)
                 accuarcy=accuarcy.item()
+                #统计整个学习周期中最大的精度值
+                if accuarcy>max_acc:
+                    max_acc=accuarcy
                 val_loss.append(val_avg_loss)
                 ac.append(accuarcy)
-                print("\033[1;45m Train Epoch:{}\tavg_val_Loss:{:.6f},correct:{}/{},accuarcy:{} \33[0m".format(epoch, val_avg_loss,correct,len(self.val_data)*BATCH_SIZE,accuarcy))
-        y=[i for i in range(EPOCH)]
-        plt.subplot(121)
-        plt.xlabel("epoch")
-        plt.ylabel('loss')
-        plt.title('the loss change with epcoh')
-        plt.plot(y,train_loss,c='r',label="train loss")
-        plt.plot(y,val_loss,c='g',label='val loss')
-        plt.legend()
-        plt.subplot(122)
-        plt.xlabel('epoch')
-        plt.ylabel('accuarcy')
-        plt.title('the accuarcy with epoch')
-        plt.plot(y,ac,c='b',label='accuarcy')
-        plt.legend()
-        plt.show()
+                if epoch%10==0:
+                  print("\033[1;45m Train Epoch:{}\tavg_val_Loss:{:.6f},correct:{}/{},accuarcy:{} \33[0m".format(epoch, val_avg_loss,correct,len(self.val_data)*BATCH_SIZE,accuarcy))
+
+        return max_acc
+        # y=[i for i in range(EPOCH)]
+        # plt.subplot(121)
+        # plt.xlabel("epoch")
+        # plt.ylabel('loss')
+        # plt.title('the loss change with epcoh')
+        # plt.plot(y,train_loss,c='r',label="train loss")
+        # plt.plot(y,val_loss,c='g',label='val loss')
+        # plt.legend()
+        # plt.subplot(122)
+        # plt.xlabel('epoch')
+        # plt.ylabel('accuarcy')
+        # plt.title('the accuarcy with epoch,kernels={}'.format(self.filter_nums))
+        # plt.plot(y,ac,c='b',label='accuarcy')
+        # plt.legend()
+        # plt.show()
 
 
 if __name__ == '__main__':
-    train = Train(root)
-    train()
+    acc_all=[]
+    i=0
+    start_time=time.time()
+    for num in range(192,256,8):
+      start_time=time.time()
+      train = Train(root,filter_nums=num)
+      max_acc=train()
+      print(max_acc)
+      acc_all.append((max_acc))
+      i+=1
+      end_time=time.time
+      print('finish train with first kerness {}'.format(num))
+    end_time=time.time()
+    print('finish training,cost {} seconds'.format(end_time-start_time))
+    x_axis=[j for j in range(i)]
+    plt.title("max acc with differen kernels")
+    plt.plot(x_axis,acc_all)
+    plt.show()
 
 
 
